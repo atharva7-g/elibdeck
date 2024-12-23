@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 def upload_file(request):
     if "GET" == request.method:
-        return render(request, 'data_import/upload.html', {})
+        return render(request, 'books_catalog/upload.html', {})
     elif request.method == "POST":
         excel_file = request.FILES["excel_file"]
         wb = openpyxl.load_workbook(excel_file)
@@ -25,4 +25,4 @@ def upload_file(request):
                 row_data.append(str(cell.value))
             excel_data.append(row_data)
 
-        return render(request, 'data_import/upload.html', {"excel_data":excel_data})
+        return render(request, 'books_catalog/upload.html', {"excel_data":excel_data})

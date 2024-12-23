@@ -7,7 +7,7 @@
         <title>Upload Excel File</title>
     </head>
     <body style="margin-top: 30px; margin-left: 30px">
-        <form action="{% url 'data_import:book-list-upload' %}"
+        <form action="{% url 'books_catalog:book-list-upload' %}"
               method="post"
               enctype="multipart/form-data">
             {% csrf_token %}
