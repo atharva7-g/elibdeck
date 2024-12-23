@@ -23,4 +23,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('accounts/', include('allauth.socialaccount.urls')),
     path('', TemplateView.as_view(template_name="home.html")),
+    path('upload/', include('data_import.urls', namespace='data_import')),
 ]
