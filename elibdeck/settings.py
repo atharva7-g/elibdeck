@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'books_catalog',
+    'users',
 ]
 
 DATABASES = {
@@ -88,13 +89,14 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
+AUTH_USER_MODEL = 'users.User'
+
 SITE_ID = 1
 
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-
 
 # SOCIALACCOUNT_ONLY = True
 
