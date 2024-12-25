@@ -1,0 +1,31 @@
+{% extends "generic.html" %}
+
+{% block content %}
+<section id="author-profile">
+    <div class="author-image">
+        <img src="" alt="[Author's Image]">
+    </div>
+    <div class="author-info">
+        <h2>{{ author }}</h2>
+        <p>[Author's Bio]</p>
+        <ul>
+            <li><strong>Birth Date:</strong>
+                {{author.date_of_birth}} - {% if author.date_of_death %}{{author.date_of_death}}{% endif %}
+            </li>
+        </ul>
+    </div>
+</section>
+
+<section id="author-books">
+    <h3>Books</h3>
+    <dl>
+        {% for book in author.book_set.all %}
+        <dt><a href="{% url 'books_catalog:book-detail' book.pk %}">{{book}}</a> ({{book.bookinstance_set.all.count}} copies)</dt>
+        <dd>{{book.summary}}</dd>
+        {% empty %}
+        <p>This author has no books.</p>
+        {% endfor %}
+    </dl>
+</section>
+
+{% endblock %}
