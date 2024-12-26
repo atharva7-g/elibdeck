@@ -9,6 +9,8 @@ from books_catalog.forms import RenewBookForm
 from .models import Book, Author, BookInstance, Genre
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
+from django.db.models import Q, Value
+from django.db.models.functions import Concat
 
 def home(request):
     """View function for home page"""
@@ -132,3 +134,30 @@ def renew_book_librarian(request, pk):
     }
 
     return render(request, 'books_catalog/renew_return_book_librarian.html', context)
+
+
+class CatalogSearchView(generic.ListView):
+    template_name = 'books_catalog/search_results.html'
+    paginate_by = 10
+    context_object_name = 'search_results'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')
+        if not query:
+            return []
+
+        books = Book.objects.annotate(
+            full_name = Concat('author__first_name', Value(' '), 'author__last_name')
+        ).filter(
+            Q(title__icontains=query) |
+            Q(isbn__icontains=query) |
+            Q(full_name__icontains=query) |
+            Q(summary__icontains=query)
+        ).distinct()
+
+        return books
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        return context

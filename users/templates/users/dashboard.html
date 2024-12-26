@@ -1,31 +1,33 @@
 {% extends 'generic.html' %}
 
 {% block content %}
-  <div class="profile-container">
-    <h1>Welcome, {{ user.first_name }}!</h1>
-    <p>Email: {{ user.email }}</p>
+    <div class="profile-container">
+        <h1>Welcome, {{ user.first_name }}!</h1>
+        <p>Email: {{ user.email }}</p>
 
-    <table>
-      <tr>
-        <td>First Name:</td>
-        <td>{{ user.first_name }}</td>
-      </tr>
-      <tr>
-        <td>Last Name:</td>
-        <td>{{ user.last_name }}</td>
-      </tr>
-      {% if perms.books_catalog.can_mark_returned %}
-      <tr>
-        <td>PSRN:</td>
-        <td></td>
-      </tr>
-      {% endif %}
-      <tr>
-        <td>Email:</td>
-        <td>{{ user.email }}</td>
-      </tr>
-    </table>
+        <table>
+            <tr>
+                <td>First Name:</td>
+                <td>{{ user.first_name }}</td>
+            </tr>
+            <tr>
+                <td>Last Name:</td>
+                <td>{{ user.last_name }}</td>
+            </tr>
+            {% if perms.books_catalog.can_mark_returned %}
+                <tr>
+                    <td>PSRN:</td>
+                    <td></td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>Email:</td>
+                <td>{{ user.email }}</td>
+            </tr>
+        </table>
 
-    <a href="{% url 'books_catalog:profile-books' %}">Your borrowed books</a>
-  </div>
+        {% if not perms.books_catalog.can_mark_returned %}
+            <a href="{% url 'books_catalog:profile-books' %}">Your borrowed books</a>
+        {% endif %}
+    </div>
 {% endblock %}

@@ -1,0 +1,30 @@
+{% extends "generic.html" %}
+
+{% block content %}
+<div class="search-container">
+{#    <form method="GET" action="{% url 'books_catalog:search' %}">#}
+{#        <input type="text" name="q" value="{{ query }}" placeholder="Search books, authors...">#}
+{#        <button type="submit">Search</button>#}
+{#    </form>#}
+
+    {% if query %}
+        <h2>Results for "{{ query }}"</h2>
+
+        {% if bookinstance_list_all %}
+            {% for book in bookinstance_list_all %}
+                <div class="book-item">
+                    <h3><a href="{% url 'books_catalog:book-detail' book.pk %}">{{ book.title }}</a></h3>
+                    <p>Author: {{ book.author }}</p>
+                    <p>ISBN: {{ book.isbn }}</p>
+                    {% if book.summary %}
+                        <p>{{ book.summary|truncatewords:30 }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <p>No results found</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

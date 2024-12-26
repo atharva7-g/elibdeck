@@ -37,19 +37,27 @@
                 <li class="nav-item">
                     <a class="nav-link" href="">Browse</a>
                 </li>
+                <li class="nav-item">
+                    <form method="get" action="{% url 'books_catalog:search' %}">
+                        <input type="text" name="q" placeholder="Search for books..." value="{{ query }}">
+                        <button type="submit">Search</button>
+                    </form>
+                </li>
+
             </ul>
             <ul class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link" href="">{{ user.get_username }}</a></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{%  url 'account_logout' %}">Logout</a>
+                        <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                     </li>
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account_login' %}?next={{ request.path }}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'account_login' %}?next={{ request.path }}">Are you a librarian?</a>
+                        <a class="nav-link" href="{% url 'account_login' %}?next={{ request.path }}">Are you a
+                            librarian?</a>
                     </li>
                 {% endif %}
             </ul>
