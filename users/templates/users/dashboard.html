@@ -17,7 +17,7 @@
             {% if perms.books_catalog.can_mark_returned %}
                 <tr>
                     <td>PSRN:</td>
-                    <td></td>
+                    <td>{{ user.psrn }}</td>
                 </tr>
             {% endif %}
             <tr>

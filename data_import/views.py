@@ -21,7 +21,6 @@ def data_upload(request):
         if not os.path.exists(file_path):
             return HttpResponse("Template file not found", status=404)
         response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename='template.xlsx')
-
         return response
     elif "POST" == request.method and request.FILES.get('excel_file'):
         excel_file = request.FILES["excel_file"]
