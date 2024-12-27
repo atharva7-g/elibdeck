@@ -1,0 +1,24 @@
+{% extends 'generic.html' %}
+
+{% block content %}
+<h1>Issuing History</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Book Title</th>
+            <th>Issue Date</th>
+            <th>Return Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in history %}
+        <tr>
+            <td>{{ record.book_instance.book.title }}</td>
+            <td>{{ record.due_date|default:"Not returned yet" }}</td>
+            <td>{{ record.book_instance.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
