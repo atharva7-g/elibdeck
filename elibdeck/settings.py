@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'books_catalog',
+    'data_import',
 ]
 
 DATABASES = {

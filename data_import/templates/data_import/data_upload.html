@@ -1,0 +1,36 @@
+{% extends 'generic.html' %}
+
+{% block content %}
+    <div class="form-group">
+        <form action="{% url "data_import:data-upload" %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file"
+                   title="Upload excel file"
+                   name="excel_file"
+                   required="required">
+            <br>
+            <input type="submit"
+                   value="Upload">
+        </form>
+    </div>
+
+
+    <hr>
+
+    {% for row in excel_data %}
+        {% for cell in row %}
+            {{ cell }}&nbsp;&nbsp;
+        {% endfor %}
+        <br>
+    {% endfor %}
+
+    <br>
+    <div class="form-group">
+        <form method="get">
+            <input type="hidden" name="download_template" value="true">
+            <button type="submit">Download Template</button>
+        </form>
+    </div>
+
+
+{% endblock %}
