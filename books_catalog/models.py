@@ -77,6 +77,8 @@ class BookInstance(models.Model):
         ('r', 'Reserved'),
     )
 
+    LATE_FEE = 5.0
+
     status = models.CharField(
         max_length=1,
         choices=LOAN_STATUS,
@@ -93,6 +95,17 @@ class BookInstance(models.Model):
     def is_overdue(self):
         """Determines if the book is overdue based on due date and current date."""
         return bool(self.due_date and date.today() > self.due_date)
+
+    @property
+    def overdue_by(self):
+        if self.is_overdue and self.status == 'o':
+            return (date.today() - self.due_date).days
+        return 0
+
+    @property
+    def late_fees(self):
+        """Calculate late fees."""
+        return self.overdue_by * self.LATE_FEE
 
     def __str__(self):
         """String for representing the Model object."""

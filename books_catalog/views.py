@@ -2,6 +2,7 @@ import datetime
 import openpyxl
 from allauth.core.internal.httpkit import redirect
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.messages.context_processors import messages
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -11,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
+from django.contrib import messages
 
 def home(request):
     """View function for home page"""
@@ -134,6 +136,35 @@ def renew_book_librarian(request, pk):
     }
 
     return render(request, 'books_catalog/renew_return_book_librarian.html', context)
+
+@login_required
+def return_book(request, pk):
+    """
+    Handles the return of a book.
+    """
+    # Get the BookInstance object using the ID passed in the URL
+    bookinst = get_object_or_404(BookInstance, id=pk)
+
+    # Check if the current user is the one who borrowed the book
+    if bookinst.borrower != request.user:
+        messages.error(request, 'You cannot return a book you did not borrow.')
+        return redirect('catalog:book_list')  # Redirect to the book list or appropriate page
+
+    # Check if the book is already returned (status is available)
+    if bookinst.status == 'a':
+        messages.error(request, 'This book has already been returned.')
+        return redirect('catalog:book_list')
+
+    # Mark the book as returned by updating status and borrower
+    bookinst.status = 'a'
+    bookinst.borrower = None
+    bookinst.due_back = None  # Optional: remove due back date
+    bookinst.save()
+
+    # Provide a success message
+    messages.success(request, f'You have successfully returned "{bookinst.book.title}".')
+
+    return redirect('books_catalog:profile-books')  # Redirect to the book list or user's borrowed books page
 
 
 class CatalogSearchView(generic.ListView):

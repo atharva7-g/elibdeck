@@ -12,4 +12,3 @@ def user_dashboard(request):
 
 class LibrarianLoginView(LoginView):
     template_name = 'users/librarian_login.html'
-    success_url = reverse_lazy('profile-page')

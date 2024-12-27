@@ -12,5 +12,6 @@ urlpatterns = [
     path('profile/books', views.LoanedToUserListView.as_view(), name='profile-books'),
     path('librarian/borrowed', views.AllLoanedListView.as_view(), name='all-borrowed-books'),
     path('book/<uuid:pk>/renew/', views.renew_book_librarian, name='renew-book-librarian'),
+    path('book/<uuid:pk>/return/', views.return_book, name='return-book'),
     path('search/', views.CatalogSearchView.as_view(), name='search'),
 ]

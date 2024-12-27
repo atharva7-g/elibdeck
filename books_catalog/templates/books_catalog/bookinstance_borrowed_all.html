@@ -1,23 +1,32 @@
 {% extends "generic.html" %}
 
 {% block content %}
-    <h1>All borrowed books</h1>
+    {% if perms.books_catalog.can_mark_returned %}
+        <h1>All borrowed books</h1>
 
-    {% if bookinstance_list_all %}
-        <ul>
+        {% if bookinstance_list_all %}
+            <ul>
 
-            {% for bookinst in bookinstance_list_all %}
-                <li class="{% if bookinst.is_overdue %}text-danger{% endif %}">
-                    <a href="{% url 'books_catalog:book-detail' bookinst.book.pk %}">{{ bookinst.book.title }}</a>
-                    ({{ bookinst.due_date }}) {% if user.is_staff %}- {{ bookinst.borrower }}{% endif %}
-                    {% if perms.catalog.can_mark_returned %}-
-                        <a href="{% url 'books_catalog:renew-book-librarian' bookinst.id %}">Renew or Return</a>
+                {% for bookinst in bookinstance_list_all %}
+                    <li class="{% if bookinst.is_overdue %}text-danger{% endif %}">
+                        <a href="{% url 'books_catalog:book-detail' bookinst.book.pk %}">{{ bookinst.book.title }}</a>
+                        ({{ bookinst.due_date }}) - {{ bookinst.borrower }}
+                        <br>
+                        {% if bookinst.is_overdue %}
+                            <p>
+                                Overdue by: {{ bookinst.overdue_by }} days. Late fee: {{ bookinst.late_fees }}
+                            </p>
                         {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
 
+                        <a href="{% url 'books_catalog:renew-book-librarian' bookinst.id %}">Renew</a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+        {% else %}
+            <p>There are no books borrowed.</p>
+        {% endif %}
     {% else %}
-        <p>There are no books borrowed.</p>
+        <h1>You are not a librarian. No access for you.</h1>
     {% endif %}
 {% endblock %}
