@@ -4,6 +4,7 @@ from django.db.models.functions import Lower
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from datetime import date
 from django.contrib.auth.models import AbstractUser
@@ -27,6 +28,7 @@ class LibrarySettings(models.Model):
 
     def __str__(self):
         return "Library Settings"
+
 
 # def get_library_settings():
 #     return LibrarySettings.get_settings()
@@ -52,22 +54,24 @@ class Genre(models.Model):
             UniqueConstraint(
                 Lower('name'),
                 name='genre_case_insensitive_unique',
-                violation_error_message = "Genre already exists (case insensitive match)"
+                violation_error_message="Genre already exists (case insensitive match)"
             ),
-        ]    
+        ]
+
 
 class Book(models.Model):
     """Model representing a book."""
     title = models.CharField(max_length=255, blank=True, null=True, help_text='Title of book')
-    
+
     # Try to have a Many-to-Many-Field thing for authors. 
     author = models.ForeignKey('Author', on_delete=models.RESTRICT, null=True)
 
-    summary = models.TextField(max_length=1000, help_text="Enter a brief description of the book.", blank=True, null=True)
+    summary = models.TextField(max_length=1000, help_text="Enter a brief description of the book.", blank=True,
+                               null=True)
     isbn = models.CharField('ISBN', max_length=13, unique=True, help_text='13 character ISBN', blank=True, null=True)
-    
+
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this book.')
-    cover_image = models.ImageField(upload_to='/media/covers/', blank=True, null=True)
+    cover_image = models.ImageField(upload_to='MEDIA_ROOT/covers/', blank=True, null=True)
     publication_date = models.IntegerField(blank=True, null=True, help_text='Date of publication')
 
     class Meta:
@@ -75,14 +79,13 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
-    
+
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this book."""
         return reverse('books_catalog:book-detail', args=[str(self.id)])
 
 
 class BookInstance(models.Model):
-
     """Model representing a specific physical copy of a book."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unique ID for this particular book across whole library")
@@ -137,7 +140,7 @@ class BookInstance(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.id} ({self.book.title})'
-    
+
 
 class Author(models.Model):
     """Model representing an author."""
@@ -158,6 +161,7 @@ class Author(models.Model):
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
 
+
 class Language(models.Model):
     """Model representing a language."""
 
@@ -165,16 +169,16 @@ class Language(models.Model):
 
     def get_absolute_url(self):
         return reverse('language-detail', args=[str(self.id)])
-    
+
     def __str__(self):
         return self.name
-    
+
     class Meta:
         constraints = [
             UniqueConstraint(
                 Lower('name'),
                 name='language_case_insensitive_unique',
-                violation_error_message = "Language already exists (case insensitive match)"
+                violation_error_message="Language already exists (case insensitive match)"
             ),
         ]
 
@@ -194,11 +198,15 @@ class BorrowingHistory(models.Model):
         self.return_date = date.today()
         self.save()
 
+
 class Feedback(models.Model):
     book = models.ForeignKey(Book, related_name='feedbacks', on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='feedbacks', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='feedbacks', on_delete=models.CASCADE, null=True)
     subject = models.CharField(max_length=255)
-    comments = models.TextField()
+    rating = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)], null=True, blank=True
+    )
+    body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -206,5 +214,3 @@ class Feedback(models.Model):
 
     class Meta:
         ordering = ['-created_at']  # To show the most recent feedback first
-
-

@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from books_catalog.forms import RenewBookForm
-from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory
+from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory, Feedback
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.db.models import Q, Value
@@ -273,17 +273,32 @@ def add_book(request):
 
     return render(request, 'books_catalog/add_book.html', {'form': form})
 
-def submit_feedback(request, book_id):
-    book = Book.objects.get(id=book_id)
+# @login_required
+# def submit_feedback(request, pk):
+#     book = get_object_or_404(Book, id=pk)
+#     if request.method == 'POST':
+#         form = FeedbackForm(request.POST)
+#         if form.is_valid():
+#             feedback = form.save(commit=False)
+#             feedback.book = book
+#             feedback.save()
+#     else:
+#         form = FeedbackForm()
+#
+#     return render(request, 'books_catalog/feedback.html', {'form': form, 'book': book})
+#
+@login_required
+def submit_feedback(request, pk):
+    book = get_object_or_404(Book, pk=pk)  # Fetch the book by primary key
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
             feedback = form.save(commit=False)
-            feedback.user = request.user  # Associate the feedback with the logged-in user
-            feedback.book = book  # Associate the feedback with the specific book
-            feedback.save()  # Save the feedback to the database
-            return redirect('book_detail', book_id=book.id)  # Redirect to the book's detail page
+            feedback.book = book  # Link the feedback to the book
+            feedback.save()
+            messages.success(request, 'Thank you for your feedback!')
+            form = FeedbackForm()
     else:
         form = FeedbackForm()
 
-    return render(request, 'feedback/submit_feedback.html', {'form': form, 'book': book})
+    return render(request, 'books_catalog/feedback.html', {'form': form, 'book': book})

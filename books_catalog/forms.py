@@ -1,7 +1,7 @@
 import datetime
 
 from django import forms
-from .models import Feedback, LibrarySettings, Book
+from .models import Feedback, LibrarySettings, Book, Author
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -22,10 +22,24 @@ class RenewBookForm(forms.Form):
         # Remember to always return the cleaned data.
         return data_date
 
-class FeedbackForm(forms.Form):
+class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
-        fields = ['subject', 'body']
+        fields = ['subject', 'body', 'rating']
+        widgets = {
+            'subject': forms.TextInput(attrs={
+                'placeholder': 'Enter the subject of your feedback',
+                'class': 'form-control',
+            }),
+            'body': forms.Textarea(attrs={
+                'placeholder': 'Write your detailed feedback here',
+                'rows': 5,
+                'class': 'form-control',
+            }),
+            'rating': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+        }
 
 class LibrarySettingsForm(forms.ModelForm):
     class Meta:
@@ -36,10 +50,15 @@ class LibrarySettingsForm(forms.ModelForm):
             'ISSUE_PERIOD': forms.NumberInput(attrs={'min': '1'}),  # Minimum value for issuing period
         }
 
+class AddAuthorForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        fields = ['first_name', 'last_name']
+
 class AddBookForm(forms.ModelForm):
     class Meta:
         model = Book
-        fields = ['title', 'author', 'publication_date', 'genre', 'isbn']
+        fields = ['title', 'author', 'publication_date', 'genre', 'isbn', 'cover_image']
         widgets = {
             'publication_date': forms.DateInput(attrs={'type': 'date'}),
         }
