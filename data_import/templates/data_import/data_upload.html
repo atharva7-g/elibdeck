@@ -1,28 +1,26 @@
 {% extends 'generic.html' %}
 
 {% block content %}
-    <div class="form-group">
-        <form action="{% url "data_import:data-upload" %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="file"
-                   title="Upload excel file"
-                   name="excel_file"
-                   required="required">
-            <br>
-            <input type="submit"
-                   value="Upload">
-        </form>
-    </div>
+    <h1>Upload Excel File</h1>
 
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %};">
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
     <hr>
-
-    {% for row in excel_data %}
-        {% for cell in row %}
-            {{ cell }}&nbsp;&nbsp;
-        {% endfor %}
-        <br>
-    {% endfor %}
 
     <br>
     <div class="form-group">
