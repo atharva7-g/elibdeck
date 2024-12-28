@@ -1,8 +1,7 @@
 import datetime
 
 from django import forms
-from .models import Feedback
-
+from .models import Feedback, LibrarySettings, Book
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -27,3 +26,18 @@ class FeedbackForm(forms.Form):
     class Meta:
         model = Feedback
         fields = ['subject', 'body']
+
+class LibrarySettingsForm(forms.ModelForm):
+    class Meta:
+        model = LibrarySettings
+        fields = ['LATE_FEE', 'ISSUE_PERIOD']  # Fields to edit
+        widgets = {
+            'LATE_FEE': forms.NumberInput(attrs={'step': '0.01'}),  # Add step for decimal input
+            'ISSUE_PERIOD': forms.NumberInput(attrs={'min': '1'}),  # Minimum value for issuing period
+        }
+
+
+class UpdateBookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ['title', 'author', 'publication_date', 'genre', 'isbn']

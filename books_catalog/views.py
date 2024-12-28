@@ -3,17 +3,20 @@ import openpyxl
 from allauth.core.internal.httpkit import redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.messages.context_processors import messages
+from django.db.models.signals import post_migrate
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from books_catalog.forms import RenewBookForm
-from .models import Book, Author, BookInstance, Genre
+from .models import Book, Author, BookInstance, Genre, LibrarySettings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
-from .forms import FeedbackForm
+from .forms import FeedbackForm, LibrarySettingsForm, UpdateBookForm
 from django.contrib import messages
+from django.dispatch import receiver
+# from .models import get_library_settings
 
 def home(request):
     """View function for home page"""
@@ -57,6 +60,22 @@ def upload_file(request):
             excel_data.append(row_data)
 
         return render(request, 'books_catalog/upload.html', {"excel_data":excel_data})
+
+@login_required
+@permission_required('books_catalog.can_mark_returned', raise_exception=True)
+def update_library_settings(request):
+    # Get the existing library settings (singleton instance)
+    library_settings, created = LibrarySettings.objects.get_or_create(pk=1)
+
+    if request.method == 'POST':
+        form = LibrarySettingsForm(request.POST, instance=library_settings)
+        if form.is_valid():
+            form.save()  # Save the updated settings
+            return redirect('books_catalog:landing-page')  # Redirect to the home page after saving
+    else:
+        form = LibrarySettingsForm(instance=library_settings)  # Prepopulate form with current settings
+
+    return render(request, 'books_catalog/update_library_settings.html', {'form': form})
 
 class BookListView(generic.ListView):
     model = Book
@@ -106,7 +125,7 @@ class AllLoanedListView(LoginRequiredMixin, generic.ListView):
         )
 
 @login_required
-@permission_required('catalog.can_mark_returned', raise_exception=True)
+@permission_required('books_catalog.can_mark_returned', raise_exception=True)
 def renew_book_librarian(request, pk):
     """Renew borrowed books, accessible to librarian."""
     book_instance = get_object_or_404(BookInstance, pk=pk)
@@ -147,9 +166,12 @@ def borrow_book(request, pk):
         messages.error(request, 'This book has already been borrowed')
         return redirect('books_catalog:books')
 
+    library_settings = LibrarySettings.objects.first()
+    ISSUE_PERIOD = library_settings.ISSUE_PERIOD
+
     bookinst.status = 'o'
     bookinst.borrower = request.user
-    bookinst.due_date = datetime.date.today() + datetime.timedelta(days=20)
+    bookinst.due_date = datetime.date.today() + datetime.timedelta(days=ISSUE_PERIOD)
     bookinst.save()
 
     messages.success(request, f'You have successfully borrowed "{bookinst.book.title}, return on {bookinst.due_date}')
@@ -161,7 +183,6 @@ def return_book(request, pk):
     """Handles the return of a book."""
     # Get the BookInstance object using the ID passed in the URL
     bookinst = get_object_or_404(BookInstance, id=pk)
-
     # Check if the current user is the one who borrowed the book
     if bookinst.borrower != request.user:
         messages.error(request, 'You cannot return a book you did not borrow.')
@@ -209,6 +230,22 @@ class CatalogSearchView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['query'] = self.request.GET.get('q', '')
         return context
+
+@login_required
+@permission_required('can_mark_returned', raise_exception=True)
+def update_book(request, pk):
+    # Get the book object by primary key (pk), if not found return 404
+    book = get_object_or_404(Book, pk=pk)
+
+    if request.method == 'POST':
+        form = UpdateBookForm(request.POST, instance=book)  # Bind the form with the existing book instance
+        if form.is_valid():
+            form.save()  # Save the updated book details
+            messages.success(request, 'Changes saved successfully!')
+    else:
+        form = UpdateBookForm(instance=book)  # Prepopulate the form with the current book details
+
+    return render(request, 'books_catalog/update_book.html', {'form': form, 'book': book})
 
 def submit_feedback(request, book_id):
     book = Book.objects.get(id=book_id)

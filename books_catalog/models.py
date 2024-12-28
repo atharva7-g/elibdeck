@@ -3,12 +3,32 @@ from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
 from django.conf import settings
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 from datetime import date
 from django.contrib.auth.models import AbstractUser
 import uuid
 
 
 # Create your models here.
+
+class LibrarySettings(models.Model):
+    LATE_FEE = models.DecimalField(max_digits=5, decimal_places=2, default=5.00)
+    ISSUE_PERIOD = models.PositiveIntegerField(default=20, help_text="Number of days a book can be issued for")
+
+    # def save(self, *args, **kwargs):
+    #     if not self.pk and LibrarySettings.objects.exists():
+    #         raise ValidationError('There can be only one LibrarySettings instance')
+    #     return super(LibrarySettings, self).save(*args, **kwargs)
+    #
+    @classmethod
+    def get_settings(cls):
+        return cls.objects.first() or cls.objects.create(LATE_FEE=5.00, ISSUE_PERIOD=20)
+
+    def __str__(self):
+        return "Library Settings"
+
+# def get_library_settings():
+#     return LibrarySettings.get_settings()
 
 class Genre(models.Model):
     """Model for genre of a book."""
@@ -77,7 +97,7 @@ class BookInstance(models.Model):
         ('r', 'Reserved'),
     )
 
-    LATE_FEE = 5.0
+    total_late_fee = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
 
     status = models.CharField(
         max_length=1,
@@ -103,9 +123,15 @@ class BookInstance(models.Model):
         return 0
 
     @property
-    def late_fees(self):
+    def late_fee(self):
         """Calculate late fees."""
-        return self.overdue_by * self.LATE_FEE
+        settings = LibrarySettings.get_settings()
+        return self.overdue_by * settings.LATE_FEE
+
+    def save(self, *args, **kwargs):
+        """Override save to update the total late fee automatically when saving."""
+        self.total_late_fee = self.late_fee  # Automatically set total late fee
+        super().save(*args, **kwargs)
 
     def __str__(self):
         """String for representing the Model object."""
@@ -163,3 +189,5 @@ class Feedback(models.Model):
 
     class Meta:
         ordering = ['-created_at']  # To show the most recent feedback first
+
+

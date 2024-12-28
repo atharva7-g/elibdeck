@@ -13,9 +13,9 @@
                     <a href="{% url 'books_catalog:return-book' bookinst.id %}" class="btn btn-primary">Return
                         Book</a>
                     <p>
-                        {% if self.is_overdue %}
-                            Overdue by: {{ bookinst.overdue_by }} days. Late fee: {{ bookinst.late_fees }}
-                        {% endif %}
+                    {% if bookinst.is_overdue %}
+                        Overdue by: {{ bookinst.overdue_by }} days. Late fee: {{ bookinst.total_late_fee }}
+                    {% endif %}
                     </p>
                 </li>
             {% endfor %}
