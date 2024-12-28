@@ -36,8 +36,18 @@ class LibrarySettingsForm(forms.ModelForm):
             'ISSUE_PERIOD': forms.NumberInput(attrs={'min': '1'}),  # Minimum value for issuing period
         }
 
+class AddBookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ['title', 'author', 'publication_date', 'genre', 'isbn']
+        widgets = {
+            'publication_date': forms.DateInput(attrs={'type': 'date'}),
+        }
 
 class UpdateBookForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ['title', 'author', 'publication_date', 'genre', 'isbn']
+        widgets = {
+            'publication_date': forms.DateInput(attrs={'type': 'date'}),
+        }

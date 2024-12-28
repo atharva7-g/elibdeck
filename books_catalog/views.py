@@ -8,12 +8,12 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from books_catalog.forms import RenewBookForm
-from .models import Book, Author, BookInstance, Genre, LibrarySettings
+from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
-from .forms import FeedbackForm, LibrarySettingsForm, UpdateBookForm
+from .forms import FeedbackForm, LibrarySettingsForm, UpdateBookForm, AddBookForm
 from django.contrib import messages
 from django.dispatch import receiver
 # from .models import get_library_settings
@@ -169,6 +169,9 @@ def borrow_book(request, pk):
     library_settings = LibrarySettings.objects.first()
     ISSUE_PERIOD = library_settings.ISSUE_PERIOD
 
+    # create borrowing record
+    borrow_record = BorrowingHistory.objects.create(user=request.user, book=bookinst)
+
     bookinst.status = 'o'
     bookinst.borrower = request.user
     bookinst.due_date = datetime.date.today() + datetime.timedelta(days=ISSUE_PERIOD)
@@ -183,6 +186,7 @@ def return_book(request, pk):
     """Handles the return of a book."""
     # Get the BookInstance object using the ID passed in the URL
     bookinst = get_object_or_404(BookInstance, id=pk)
+    borrow_record = get_object_or_404(BorrowingHistory, id=pk, user=request.user)
     # Check if the current user is the one who borrowed the book
     if bookinst.borrower != request.user:
         messages.error(request, 'You cannot return a book you did not borrow.')
@@ -192,6 +196,8 @@ def return_book(request, pk):
     if bookinst.status == 'a':
         messages.error(request, 'This book has already been returned.')
         return redirect('books_catalog:books')
+
+    borrow_record.mark_as_returned()
 
     # Mark the book as returned by updating status and borrower
     bookinst.status = 'a'
@@ -203,6 +209,12 @@ def return_book(request, pk):
     messages.success(request, f'You have successfully returned "{bookinst.book.title}".')
 
     return redirect('books_catalog:profile-books')  # Redirect to the book list or user's borrowed books page
+
+
+def history_borrowed_books(request):
+    borrow_records = BorrowingHistory.objects.filter(user=request.user)
+
+    return render(request, 'books_catalog/bookinstance_borrowed_user_history.html', {'borrow_records':borrow_records})
 
 
 class CatalogSearchView(generic.ListView):
@@ -232,7 +244,7 @@ class CatalogSearchView(generic.ListView):
         return context
 
 @login_required
-@permission_required('can_mark_returned', raise_exception=True)
+@permission_required('books_catalog.can_mark_returned', raise_exception=True)
 def update_book(request, pk):
     # Get the book object by primary key (pk), if not found return 404
     book = get_object_or_404(Book, pk=pk)
@@ -246,6 +258,20 @@ def update_book(request, pk):
         form = UpdateBookForm(instance=book)  # Prepopulate the form with the current book details
 
     return render(request, 'books_catalog/update_book.html', {'form': form, 'book': book})
+
+@login_required
+@permission_required('books_catalog.can_mark_returned', raise_exception=True)
+def add_book(request):
+    if request.method == 'POST':
+        form = AddBookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Book added successfully!')
+            return redirect('books_catalog:books')
+    else:
+        form = AddBookForm()
+
+    return render(request, 'books_catalog/add_book.html', {'form': form})
 
 def submit_feedback(request, book_id):
     book = Book.objects.get(id=book_id)

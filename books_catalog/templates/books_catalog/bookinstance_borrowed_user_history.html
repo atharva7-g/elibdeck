@@ -1,0 +1,22 @@
+{% extends 'generic.html' %}
+
+{% block content %}
+  <h2>Your Borrowed Books</h2>
+
+  {% if borrowing_records %}
+    <ul>
+      {% for record in borrowing_records %}
+        <li>
+          {{ record.book.title }} (borrowed on {{ record.borrowed_date }})
+          {% if record.is_returned %}
+            <span>Returned on {{ record.return_date }}</span>
+          {% else %}
+            <span>Not yet returned</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You have not borrowed any books.</p>
+  {% endif %}
+{% endblock %}

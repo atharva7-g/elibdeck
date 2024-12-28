@@ -10,11 +10,12 @@ urlpatterns = [
     path('authors/', views.AuthorListView.as_view(), name='authors'),
     path('author/<int:pk>', views.AuthorDetailView.as_view(), name='author-detail'),
     path('profile/books', views.LoanedToUserListView.as_view(), name='profile-books'),
+    path('profile/books/history', views.history_borrowed_books, name='profile-books-history'),
 
     path('librarian/borrowed', views.AllLoanedListView.as_view(), name='all-borrowed-books'),
     path('librarian/update-settings', views.update_library_settings, name='update-library-settings'),
     path('book/<int:pk>/edit', views.update_book, name='update-book'),
-
+    path('book/add', views.add_book, name='add-book'),
 
     path('book/<uuid:pk>/renew/', views.renew_book_librarian, name='renew-book-librarian'),
     path('book/<uuid:pk>/borrow', views.borrow_book, name='borrow-book'),

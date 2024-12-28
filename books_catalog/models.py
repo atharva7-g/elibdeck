@@ -3,6 +3,7 @@ from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
 from django.conf import settings
 from django.urls import reverse
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from datetime import date
 from django.contrib.auth.models import AbstractUser
@@ -66,7 +67,7 @@ class Book(models.Model):
     isbn = models.CharField('ISBN', max_length=13, unique=True, help_text='13 character ISBN', blank=True, null=True)
     
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this book.')
-
+    cover_image = models.ImageField(upload_to='/media/covers/', blank=True, null=True)
     publication_date = models.IntegerField(blank=True, null=True, help_text='Date of publication')
 
     class Meta:
@@ -176,6 +177,22 @@ class Language(models.Model):
                 violation_error_message = "Language already exists (case insensitive match)"
             ),
         ]
+
+
+class BorrowingHistory(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    borrowed_date = models.DateTimeField(default=timezone.now)
+    return_date = models.DateTimeField(null=True, blank=True)
+    is_returned = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.user.username} borrowed {self.book.title} on {self.borrowed_date}'
+
+    def mark_as_returned(self):
+        self.is_returned = True
+        self.return_date = date.today()
+        self.save()
 
 class Feedback(models.Model):
     book = models.ForeignKey(Book, related_name='feedbacks', on_delete=models.CASCADE)
