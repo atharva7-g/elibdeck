@@ -1,0 +1,14 @@
+{% extends "generic.html" %}
+
+{% block content %}
+  <h1>Submit Feedback for {{ book.title }}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Feedback</button>
+  </form>
+
+  <br>
+  <a href="{% url 'books_catalog:book-detail' book_id=book.id %}">Back to Book</a>
+{% endblock %}

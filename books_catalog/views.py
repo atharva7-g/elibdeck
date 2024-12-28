@@ -12,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
+from .forms import FeedbackForm
 from django.contrib import messages
 
 def home(request):
@@ -138,27 +139,43 @@ def renew_book_librarian(request, pk):
     return render(request, 'books_catalog/renew_return_book_librarian.html', context)
 
 @login_required
+def borrow_book(request, pk):
+    """Handles borrowing."""
+    bookinst = get_object_or_404(BookInstance, id=pk)
+
+    if bookinst.status == 'o':
+        messages.error(request, 'This book has already been borrowed')
+        return redirect('books_catalog:books')
+
+    bookinst.status = 'o'
+    bookinst.borrower = request.user
+    bookinst.due_date = datetime.date.today() + datetime.timedelta(days=20)
+    bookinst.save()
+
+    messages.success(request, f'You have successfully borrowed "{bookinst.book.title}, return on {bookinst.due_date}')
+
+    return redirect('books_catalog:profile-books')
+
+@login_required
 def return_book(request, pk):
-    """
-    Handles the return of a book.
-    """
+    """Handles the return of a book."""
     # Get the BookInstance object using the ID passed in the URL
     bookinst = get_object_or_404(BookInstance, id=pk)
 
     # Check if the current user is the one who borrowed the book
     if bookinst.borrower != request.user:
         messages.error(request, 'You cannot return a book you did not borrow.')
-        return redirect('catalog:book_list')  # Redirect to the book list or appropriate page
+        return redirect('books_catalog:books')  # Redirect to the book list or appropriate page
 
     # Check if the book is already returned (status is available)
     if bookinst.status == 'a':
         messages.error(request, 'This book has already been returned.')
-        return redirect('catalog:book_list')
+        return redirect('books_catalog:books')
 
     # Mark the book as returned by updating status and borrower
     bookinst.status = 'a'
     bookinst.borrower = None
-    bookinst.due_back = None  # Optional: remove due back date
+    bookinst.due_date = None  # Optional: remove due back date
     bookinst.save()
 
     # Provide a success message
@@ -192,3 +209,18 @@ class CatalogSearchView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['query'] = self.request.GET.get('q', '')
         return context
+
+def submit_feedback(request, book_id):
+    book = Book.objects.get(id=book_id)
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.user = request.user  # Associate the feedback with the logged-in user
+            feedback.book = book  # Associate the feedback with the specific book
+            feedback.save()  # Save the feedback to the database
+            return redirect('book_detail', book_id=book.id)  # Redirect to the book's detail page
+    else:
+        form = FeedbackForm()
+
+    return render(request, 'feedback/submit_feedback.html', {'form': form, 'book': book})

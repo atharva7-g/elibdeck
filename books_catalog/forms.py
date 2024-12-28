@@ -1,6 +1,7 @@
 import datetime
 
 from django import forms
+from .models import Feedback
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -21,3 +22,8 @@ class RenewBookForm(forms.Form):
 
         # Remember to always return the cleaned data.
         return data_date
+
+class FeedbackForm(forms.Form):
+    class Meta:
+        model = Feedback
+        fields = ['subject', 'body']

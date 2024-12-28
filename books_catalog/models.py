@@ -150,3 +150,16 @@ class Language(models.Model):
                 violation_error_message = "Language already exists (case insensitive match)"
             ),
         ]
+
+class Feedback(models.Model):
+    book = models.ForeignKey(Book, related_name='feedbacks', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='feedbacks', on_delete=models.CASCADE)
+    subject = models.CharField(max_length=255)
+    comments = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback from {self.user} on {self.book.title}"
+
+    class Meta:
+        ordering = ['-created_at']  # To show the most recent feedback first

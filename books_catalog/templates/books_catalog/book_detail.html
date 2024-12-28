@@ -21,6 +21,8 @@
       </p>
       {% if copy.status != 'a' %}
         <p><strong>Due to be returned:</strong> {{ copy.due_date }}</p>
+      {% elif copy.status == 'a' and user.is_authenticated and not perms.books_catalog.can_mark_returned %}
+        <p><a href="{% url 'books_catalog:borrow-book' copy.id %}" class="btn">Borrow book</a></p>
       {% endif %}
       <p><strong>Imprint:</strong> {{ copy.imprint }}</p>
       <p class="text-muted"><strong>Id:</strong> {{ copy.id }}</p>
