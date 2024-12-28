@@ -8,7 +8,7 @@ from django.views import View
 
 from django.http import FileResponse, HttpResponse
 from django.contrib import messages
-from books_catalog.models import Book, Author
+from books_catalog.models import Genre, Book, Author
 from .forms import DataUploadForm
 
 
@@ -41,11 +41,17 @@ def data_upload(request):
                         last_name=last_name
                     )
 
-                    books.append(Book(
+                    book = Book.objects.create(
                         title=row['Title'],
                         author=author,
-                        isbn=row['ISBN'],
-                    ))
+                        publication_date=row['Publication Date'],
+                        isbn=row['ISBN']
+                    )
+
+                    genres = [g.strip() for g in row['Genre'].split(',')] if row['Genre'] else []
+                    genre_objects = [Genre.objects.get_or_create(name=genre)[0] for genre in genres]
+                    book.genre.set(genre_objects)
+
 
                 Book.objects.bulk_create(books)
 
