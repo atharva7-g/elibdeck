@@ -1,0 +1,27 @@
+{% extends 'generic.html' %}
+
+{% block content %}
+    {% if perms.books_catalog.can_mark_returned %}
+        <h1>Feedback for "{{ book.title }}"</h1>
+        <p>Author: {{ book.author }}</p>
+
+        <h2>Average Rating: {{ average_rating|default:"No ratings yet" }}</h2>
+
+        {% if feedbacks %}
+            <ul class="list-group">
+                {% for feedback in feedbacks %}
+                    <li class="list-group-item">
+                        <strong>{{ feedback.subject }}</strong> by {{ feedback.user.username }}<br>
+                        <p>{{ feedback.body }}</p>
+                        <small>Rating: {{ feedback.rating }}/5</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No feedback yet for this book.</p>
+        {% endif %}
+
+    {% else %}
+        <p>Only for librarians.</p>
+    {% endif %}
+{% endblock %}

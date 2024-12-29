@@ -202,9 +202,7 @@ class Feedback(models.Model):
     book = models.ForeignKey(Book, related_name='feedbacks', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='feedbacks', on_delete=models.CASCADE, null=True)
     subject = models.CharField(max_length=255)
-    rating = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)], null=True, blank=True
-    )
+    rating = models.PositiveIntegerField(choices=[(i, str(i)) for i in range(1, 6)], default=True, null=True)  # Rating from 1 to 5)
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

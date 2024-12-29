@@ -12,7 +12,7 @@ from books_catalog.forms import RenewBookForm
 from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory, Feedback
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
-from django.db.models import Q, Value
+from django.db.models import Q, Value, Avg
 from django.db.models.functions import Concat
 from .forms import FeedbackForm, LibrarySettingsForm, UpdateBookForm, AddBookForm
 from django.contrib import messages
@@ -170,6 +170,8 @@ def borrow_book(request, pk):
     library_settings = LibrarySettings.objects.first()
     ISSUE_PERIOD = library_settings.ISSUE_PERIOD
 
+    bookinst.book.borrowers.add(request.user)
+
     bookinst.status = 'o'
     bookinst.borrower = request.user
     bookinst.due_date = datetime.date.today() + datetime.timedelta(days=ISSUE_PERIOD)
@@ -286,6 +288,10 @@ def add_book(request):
 @login_required
 def submit_feedback(request, pk):
     book = get_object_or_404(Book, pk=pk)  # Fetch the book by primary key
+
+    if request.user not in book.borrowers.all():
+        messages.error(request, "You can only leave feedback for books you have borrowed.")
+
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
@@ -298,3 +304,16 @@ def submit_feedback(request, pk):
         form = FeedbackForm()
 
     return render(request, 'books_catalog/feedback.html', {'form': form, 'book': book})
+
+@login_required
+@permission_required('books_catalog.can_mark_returned', raise_exception=True)
+def view_feedback(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    feedbacks = book.feedbacks.all()
+    average_rating = feedbacks.aggregate(Avg('rating'))['rating__avg']
+
+    return render(request, 'books_catalog/view_feedback.html', {
+        'book': book,
+        'feedbacks': feedbacks,
+        'average_rating': average_rating
+    })

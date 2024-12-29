@@ -1,24 +1,33 @@
 {% extends 'generic.html' %}
 
 {% block content %}
-    <h1>Feedback for <i>{{ book.title }}</i></h1>
+    <h1>Feedback for {{ book.title }}</h1>
+    <p>Author: {{ book.author }}</p>
 
-    <form method="post">
-        {% csrf_token %}
-        <div>
-            <label for="id_subject">Subject:</label>
-            {{ form.subject }}
-        </div>
+    {% if user in book.borrowers.all %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_subject" class="form-label">Subject</label>
+                {{ form.subject }}
+            </div>
+            <div class="mb-3">
+                <label for="id_body" class="form-label">Feedback</label>
+                {{ form.body }}
+            </div>
+            <div class="mb-3">
+                <label for="id_rating" class="form-label">Rating</label>
+                {{ form.rating }}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    {% else %}
+        <p>You need to borrow this book before submitting feedback.</p>
+    {% endif %}
+</div>
+</body>
+</html>
 
-        <div>
-            <label for="id_body">Feedback Body:</label>
-            {{ form.body }}
-        </div>
-        <div>
-            <label for="id_rating">Rating</label>
-            {{ form.rating }}
-        </div>
-        <button type="submit">Submit Feedback</button>
-    </form>
+
 
 {% endblock %}
