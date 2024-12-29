@@ -74,6 +74,8 @@ class Book(models.Model):
     cover_image = models.ImageField(upload_to='MEDIA_ROOT/covers/', blank=True, null=True)
     publication_date = models.IntegerField(blank=True, null=True, help_text='Date of publication')
 
+    borrowers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="borrowed_books")
+
     class Meta:
         ordering = ['title', '-publication_date']
 
