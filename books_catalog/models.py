@@ -185,19 +185,16 @@ class Language(models.Model):
 
 class BorrowingHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    borrowed_date = models.DateTimeField(default=timezone.now)
-    return_date = models.DateTimeField(null=True, blank=True)
-    is_returned = models.BooleanField(default=False)
+    bookinst = models.ForeignKey(BookInstance, on_delete=models.CASCADE, null=True, blank=True)
+    borrowed_date = models.DateField(default=timezone.now)
+    return_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.user.username} borrowed {self.book.title} on {self.borrowed_date}'
+        return f"{self.user.username} borrowed {self.bookinst.book.title} on {self.return_date}"
 
-    def mark_as_returned(self):
-        self.is_returned = True
-        self.return_date = date.today()
-        self.save()
-
+    @property
+    def is_returned(self):
+        return self.return_date is not None
 
 class Feedback(models.Model):
     book = models.ForeignKey(Book, related_name='feedbacks', on_delete=models.CASCADE)

@@ -10,7 +10,6 @@ urlpatterns = [
     path('authors/', views.AuthorListView.as_view(), name='authors'),
     path('author/<int:pk>', views.AuthorDetailView.as_view(), name='author-detail'),
     path('profile/books', views.LoanedToUserListView.as_view(), name='profile-books'),
-    path('profile/books/history', views.history_borrowed_books, name='profile-books-history'),
 
     path('librarian/borrowed', views.AllLoanedListView.as_view(), name='all-borrowed-books'),
     path('librarian/update-settings', views.update_library_settings, name='update-library-settings'),
@@ -23,6 +22,4 @@ urlpatterns = [
     path('book/<int:pk>/feedback/', views.submit_feedback, name='feedback'),
 
     path('search/', views.CatalogSearchView.as_view(), name='search'),
-
-    path('books/<int:pk>/feedback', views.submit_feedback, name='submit-feedback'),
 ]

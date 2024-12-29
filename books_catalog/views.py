@@ -1,4 +1,5 @@
 import datetime
+from django.utils import timezone
 import openpyxl
 from allauth.core.internal.httpkit import redirect
 from django.contrib.auth.decorators import login_required, permission_required
@@ -169,9 +170,6 @@ def borrow_book(request, pk):
     library_settings = LibrarySettings.objects.first()
     ISSUE_PERIOD = library_settings.ISSUE_PERIOD
 
-    # create borrowing record
-    borrow_record = BorrowingHistory.objects.create(user=request.user, book=bookinst)
-
     bookinst.status = 'o'
     bookinst.borrower = request.user
     bookinst.due_date = datetime.date.today() + datetime.timedelta(days=ISSUE_PERIOD)
@@ -186,7 +184,6 @@ def return_book(request, pk):
     """Handles the return of a book."""
     # Get the BookInstance object using the ID passed in the URL
     bookinst = get_object_or_404(BookInstance, id=pk)
-    borrow_record = get_object_or_404(BorrowingHistory, id=pk, user=request.user)
     # Check if the current user is the one who borrowed the book
     if bookinst.borrower != request.user:
         messages.error(request, 'You cannot return a book you did not borrow.')
@@ -196,8 +193,6 @@ def return_book(request, pk):
     if bookinst.status == 'a':
         messages.error(request, 'This book has already been returned.')
         return redirect('books_catalog:books')
-
-    borrow_record.mark_as_returned()
 
     # Mark the book as returned by updating status and borrower
     bookinst.status = 'a'
@@ -211,10 +206,11 @@ def return_book(request, pk):
     return redirect('books_catalog:profile-books')  # Redirect to the book list or user's borrowed books page
 
 
-def history_borrowed_books(request):
-    borrow_records = BorrowingHistory.objects.filter(user=request.user)
-
-    return render(request, 'books_catalog/bookinstance_borrowed_user_history.html', {'borrow_records':borrow_records})
+# @login_required
+# def history_borrowed_books(request):
+#     borrow_records = BorrowingHistory.objects.filter(user=request.user).order_by('-return_date')
+#
+#     return render(request, 'books_catalog/bookinstance_borrowed_user_history.html', {'borrow_records':borrow_records})
 
 
 class CatalogSearchView(generic.ListView):
@@ -286,7 +282,7 @@ def add_book(request):
 #         form = FeedbackForm()
 #
 #     return render(request, 'books_catalog/feedback.html', {'form': form, 'book': book})
-#
+
 @login_required
 def submit_feedback(request, pk):
     book = get_object_or_404(Book, pk=pk)  # Fetch the book by primary key

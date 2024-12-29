@@ -52,7 +52,6 @@ def data_upload(request):
                     genre_objects = [Genre.objects.get_or_create(name=genre)[0] for genre in genres]
                     book.genre.set(genre_objects)
 
-
                 Book.objects.bulk_create(books)
 
                 messages.success(request, 'Books successfully added!')

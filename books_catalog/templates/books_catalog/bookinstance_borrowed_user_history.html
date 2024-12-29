@@ -3,9 +3,9 @@
 {% block content %}
   <h2>Your Borrowed Books</h2>
 
-  {% if borrowing_records %}
+  {% if borrow_records %}
     <ul>
-      {% for record in borrowing_records %}
+      {% for record in borrow_records %}
         <li>
           {{ record.book.title }} (borrowed on {{ record.borrowed_date }})
           {% if record.is_returned %}
