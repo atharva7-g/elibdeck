@@ -300,6 +300,8 @@ def submit_feedback(request, pk):
             feedback.save()
             messages.success(request, 'Thank you for your feedback!')
             form = FeedbackForm()
+
+            return redirect('books_catalog:profile-books')
     else:
         form = FeedbackForm()
 

@@ -20,7 +20,7 @@ urlpatterns = [
     path('book/<uuid:pk>/borrow', views.borrow_book, name='borrow-book'),
     path('book/<uuid:pk>/return/', views.return_book, name='return-book'),
     path('book/<int:pk>/feedback/', views.submit_feedback, name='feedback'),
-    path('book/<int:pk>/feedback/view', views.submit_feedback, name='view-feedback'),
+    path('book/<int:pk>/feedback/view', views.view_feedback, name='view-feedback'),
 
     path('search/', views.CatalogSearchView.as_view(), name='search'),
 ]

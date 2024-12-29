@@ -11,7 +11,7 @@
             <ul class="list-group">
                 {% for feedback in feedbacks %}
                     <li class="list-group-item">
-                        <strong>{{ feedback.subject }}</strong> by {{ feedback.user.username }}<br>
+                        <strong>{{ feedback.subject }}</strong><br>
                         <p>{{ feedback.body }}</p>
                         <small>Rating: {{ feedback.rating }}/5</small>
                     </li>

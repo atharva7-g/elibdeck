@@ -28,6 +28,8 @@
             <p class="text-muted"><strong>Id:</strong> {{ copy.id }}</p>
             {% if perms.books_catalog.can_mark_returned %}
                 <a href="{% url 'books_catalog:update-book' pk=book.pk %}" class="btn btn-primary">Edit</a>
+            {% else %}
+                <a href="{% url 'books_catalog:feedback' pk=book.pk %}" class="btn btn-primary">Submit Feedback</a>
             {% endif %}
         {% endfor %}
     </div>
