@@ -290,7 +290,7 @@ def submit_feedback(request, pk):
         form = FeedbackForm(request.POST)
         if form.is_valid():
             feedback = form.save(commit=False)
-            feedback.book = book  # Link the feedback to the book
+            feedback.book = book
             feedback.save()
             messages.success(request, 'Thank you for your feedback!')
             form = FeedbackForm()

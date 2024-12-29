@@ -46,7 +46,7 @@ class LibrarySettingsForm(forms.ModelForm):
         model = LibrarySettings
         fields = ['LATE_FEE', 'ISSUE_PERIOD']  # Fields to edit
         widgets = {
-            'LATE_FEE': forms.NumberInput(attrs={'step': '0.01'}),  # Add step for decimal input
+            'LATE_FEE': forms.NumberInput(attrs={'step': '0.5'}),  # Add step for decimal input
             'ISSUE_PERIOD': forms.NumberInput(attrs={'min': '1'}),  # Minimum value for issuing period
         }
 

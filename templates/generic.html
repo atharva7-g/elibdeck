@@ -49,10 +49,13 @@
             </ul>
             <ul class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="">{{ user.get_username }}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'users:profile-page' %}">{{ user.get_username }}</a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                     </li>
+                    {% if perms.books_catalog.can_mark_returned %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'books_catalog:update-library-settings' %}">Update settings</a></li>
+                    {% endif %}
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account_login' %}?next={{ request.path }}">Login</a>
