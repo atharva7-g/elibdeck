@@ -1,6 +1,6 @@
 For SUTT.
 
 TODO:
-- rating system
+- ~~rating system~~
 - Google Console API key
 - Cover Image
