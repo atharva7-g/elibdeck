@@ -10,16 +10,6 @@
         <button type="submit">Upload</button>
     </form>
 
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %};">
-                    {{ message }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
     <hr>
 
     <br>

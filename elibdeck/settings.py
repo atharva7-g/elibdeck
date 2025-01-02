@@ -12,24 +12,28 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv, find_dotenv
 
 from django.conf.global_settings import LOGOUT_REDIRECT_URL, AUTH_USER_MODEL
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# For SECRET_KEY environment variable
+load_dotenv(find_dotenv())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gd%nw_2&kttw*ayo158&grh_sok^598wgq6_ynplqeeb3p4bqo'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['ag3546.pythonanywhere.com']
 
+ACCOUNT_DEFAULT_HTTP_PROTOCOL='https'
 
 # Application definition
 
@@ -60,8 +64,8 @@ DATABASES = {
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '<your-client-id>',
-            'secret': '<your-client-secret>',
+            'client_id': os.environ['client_id'],
+            'secret': os.environ['secret'],
             'key': ''
         },
         'SCOPE': [
@@ -95,9 +99,12 @@ AUTH_USER_MODEL = 'users.User'
 SITE_ID = 1
 
 ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+LOGIN_REDIRECT_URL = '/'
 
-LOGIN_REDIRECT_URL = "/"
-
+# conflicts with a separate librarian login, since that is email-password.
 # SOCIALACCOUNT_ONLY = True
 
 ROOT_URLCONF = 'elibdeck.urls'
@@ -170,6 +177,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
