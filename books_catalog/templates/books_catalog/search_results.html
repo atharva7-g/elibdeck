@@ -1,30 +1,44 @@
 {% extends "generic.html" %}
 
 {% block content %}
-<div class="search-container">
-{#    <form method="GET" action="{% url 'books_catalog:search' %}">#}
-{#        <input type="text" name="q" value="{{ query }}" placeholder="Search books, authors...">#}
-{#        <button type="submit">Search</button>#}
-{#    </form>#}
+    <div style="margin-left:20px;margin-top:20px">
 
-    {% if query %}
-        <h2>Results for "{{ query }}"</h2>
+        <div class="search-container">
+            {#    <form method="GET" action="{% url 'books_catalog:search' %}">#}
+            {#        <input type="text" name="q" value="{{ query }}" placeholder="Search books, authors...">#}
+            {#        <button type="submit">Search</button>#}
+            {#    </form>#}
 
-        {% if bookinstance_list_all %}
-            {% for book in bookinstance_list_all %}
-                <div class="book-item">
-                    <h3><a href="{% url 'books_catalog:book-detail' book.pk %}">{{ book.title }}</a></h3>
-                    <p>Author: {{ book.author }}</p>
-                    <p>ISBN: {{ book.isbn }}</p>
-                    {% if book.summary %}
-                        <p>{{ book.summary|truncatewords:30 }}</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
+            {% if query %}
+                {% if search_results %}
+                    {% for book in search_results %}
+                        <div class="container mt-4">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h3><a href="{% url 'books_catalog:book-detail' book.pk %}">{{ book.title }}</a>
+                                    </h3>
+                                    <p>by {{ book.author }}</p>
+                                    {% if book.cover_image %}
+                                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid"/>
+                                    {% else %}
+                                        <p>No cover image available</p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-8">
+                                    <p>ISBN: {{ book.isbn }}</p>
+                                    {% if book.summary %}
+                                        <p>{{ book.summary|truncatewords:30 }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                    {% endfor %}
 
-        {% else %}
-            <p>No results found</p>
-        {% endif %}
-    {% endif %}
-</div>
+                {% else %}
+                    <p>No results found</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

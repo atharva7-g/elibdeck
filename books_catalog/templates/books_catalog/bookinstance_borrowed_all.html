@@ -1,27 +1,43 @@
 {% extends "generic.html" %}
 
 {% block content %}
+    <h1>All borrowed books</h1>
     {% if perms.books_catalog.can_mark_returned %}
-        <h1>All borrowed books</h1>
-
         {% if bookinstance_list_all %}
-            <ul>
-
-                {% for bookinst in bookinstance_list_all %}
-                    <li class="{% if bookinst.is_overdue %}text-danger{% endif %}">
-                        <a href="{% url 'books_catalog:book-detail' bookinst.book.pk %}">{{ bookinst.book.title }}</a>
-                        ({{ bookinst.due_date }}) - {{ bookinst.borrower }}
-                        <br>
-                        {% if bookinst.is_overdue %}
-                            <p>
-                                Overdue by: {{ bookinst.overdue_by }} days. Late fee: {{ bookinst.late_fees }}
-                            </p>
-                        {% endif %}
-
-                        <a href="{% url 'books_catalog:renew-book-librarian' bookinst.id %}">Renew</a>
-                    </li>
-                {% endfor %}
-            </ul>
+            {% for bookinst in bookinstance_list_all %}
+                <div class="container mt-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ul style="list-style-type: none;">
+                                <li>
+                                    <a href="{% url 'books_catalog:book-detail' bookinst.book.pk %}">{{ bookinst.book.title }}</a>
+                                    {% if book.cover_image %}
+                                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid"/>
+                                    {% else %}
+                                        <p>No cover image available</p>
+                                    {% endif %}
+                                    <br>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-8">
+                            <ul style="list-style-type: none;">
+                                <li>Borrowed by {{ bookinst.borrower }}</li>
+                                <li>Due on {{ bookinst.due_date }}</li>
+                                <li class="{% if bookinst.is_overdue %}text-danger{% endif %}">
+                                    {% if bookinst.is_overdue %}
+                                        <p>
+                                            Overdue by: {{ bookinst.overdue_by }} days. Late
+                                            fee: {{ bookinst.late_fee }}
+                                        </p>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            {% endfor %}
 
         {% else %}
             <p>There are no books borrowed.</p>
@@ -29,4 +45,5 @@
     {% else %}
         <h1>You are not a librarian. No access for you.</h1>
     {% endif %}
+    </div>
 {% endblock %}

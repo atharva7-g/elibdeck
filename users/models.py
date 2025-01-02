@@ -8,6 +8,8 @@ class User(AbstractUser):
     if is_librarian:
         psrn = models.CharField(
             max_length=255, default=uuid4, primary_key=True, editable=False, unique=True)
+    else:
+        room = models.TextField(default="No hostel.")
 
     def __str__(self):
         return self.username

@@ -177,7 +177,7 @@ def borrow_book(request, pk):
     bookinst.due_date = datetime.date.today() + datetime.timedelta(days=ISSUE_PERIOD)
     bookinst.save()
 
-    messages.success(request, f'You have successfully borrowed "{bookinst.book.title}, return on {bookinst.due_date}')
+    messages.add_message(request, messages.SUCCESS, f'You have successfully borrowed "{bookinst.book.title}, return on {bookinst.due_date}', extra_tags='borrowed-tag')
 
     return redirect('books_catalog:profile-books')
 
