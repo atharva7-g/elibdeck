@@ -4,15 +4,28 @@
     <div style="margin-left:20px;margin-top:20px">
         <h1>{{ book.title }}</h1>
 
-        <div class="container mt-4">
+        <div class="card mt-4 p-3">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-2">
                     {% if book.cover_image %}
-                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid"/>
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid"
+                             style="height: 200px; object-fit: cover;"/>
                     {% else %}
                         <p>No cover image available</p>
                     {% endif %}
-                    <a href="{% url 'books_catalog:feedback' pk=book.pk %}" class="btn btn-primary">Submit Feedback</a>
+                    <br>
+                    <br>
+                    {% if not perms.books_catalog.can_mark_returned %}
+                        <a href="{% url 'books_catalog:feedback' pk=book.pk %}" class="btn btn-primary">Submit
+                            Feedback</a>
+                    {% else %}
+                        <div class="card" style="width: 8em;">
+                            <div class="card-body">
+                                <p class="card-text">{{ average_rating|default:"No ratings yet" }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+
                 </div>
 
                 <div class="col-md-8">
@@ -25,8 +38,7 @@
                 </div>
             </div>
         </div>
-
-
+        <br>
         <h4>Copies</h4>
 
         {% for copy in book.bookinstance_set.all %}

@@ -16,7 +16,8 @@ from django.db.models import Q, Value, Avg
 from django.db.models.functions import Concat
 from .forms import FeedbackForm, LibrarySettingsForm, UpdateBookForm, AddBookForm
 from django.contrib import messages
-from django.dispatch import receiver
+
+
 # from .models import get_library_settings
 
 def home(request):
@@ -31,6 +32,8 @@ def home(request):
 
     num_authors = Author.objects.count()
 
+    genres = Genre.objects.all()
+
     context = {
         'num_books': num_books,
         'num_instances': num_instances,
@@ -38,7 +41,11 @@ def home(request):
         'num_authors': num_authors,
     }
 
+    for genre in genres:
+        context[f'{genre.name.lower()}_books'] = Book.objects.filter(genre=genre)
+
     return render(request, 'landing-page.html', context=context)
+
 
 def upload_file(request):
     if "GET" == request.method:
@@ -60,7 +67,8 @@ def upload_file(request):
                 row_data.append(str(cell.value))
             excel_data.append(row_data)
 
-        return render(request, 'books_catalog/upload.html', {"excel_data":excel_data})
+        return render(request, 'books_catalog/upload.html', {"excel_data": excel_data})
+
 
 @login_required
 @permission_required('books_catalog.can_mark_returned', raise_exception=True)
@@ -78,25 +86,30 @@ def update_library_settings(request):
 
     return render(request, 'books_catalog/update_library_settings.html', {'form': form})
 
+
 class BookListView(generic.ListView):
     model = Book
     template_name = 'books_catalog/book_list.html'
     paginate_by = 10
+
 
 class AuthorListView(generic.ListView):
     model = Author
     template_name = 'books_catalog/author_list.html'
     paginate_by = 10
 
+
 class BookDetailView(generic.DetailView):
     model = Book
     template_name = 'books_catalog/book_detail.html'
     context_object_name = 'book'
 
+
 class AuthorDetailView(generic.DetailView):
     model = Author
     template_name = 'books_catalog/author_detail.html'
     context_object_name = 'author'
+
 
 class LoanedToUserListView(LoginRequiredMixin, generic.ListView):
     """Generic class-based view listing books on loan to current user."""
@@ -104,12 +117,14 @@ class LoanedToUserListView(LoginRequiredMixin, generic.ListView):
     template_name = 'books_catalog/bookinstance_borrowed_user.html'
     context_object_name = 'bookinstance_list'
     paginate_by = 10
+
     def get_queryset(self):
         return (
             BookInstance.objects.filter(borrower=self.request.user)
             .filter(status__exact='o')
             .order_by('due_date')
         )
+
 
 class AllLoanedListView(LoginRequiredMixin, generic.ListView):
     """Generic class-based view listing all books loaned by users."""
@@ -124,6 +139,7 @@ class AllLoanedListView(LoginRequiredMixin, generic.ListView):
             BookInstance.objects.filter(status__exact='o')
             .order_by('due_date')
         )
+
 
 @login_required
 @permission_required('books_catalog.can_mark_returned', raise_exception=True)
@@ -158,6 +174,7 @@ def renew_book_librarian(request, pk):
 
     return render(request, 'books_catalog/renew_return_book_librarian.html', context)
 
+
 @login_required
 def borrow_book(request, pk):
     """Handles borrowing."""
@@ -177,9 +194,12 @@ def borrow_book(request, pk):
     bookinst.due_date = datetime.date.today() + datetime.timedelta(days=ISSUE_PERIOD)
     bookinst.save()
 
-    messages.add_message(request, messages.SUCCESS, f'You have successfully borrowed "{bookinst.book.title}, return on {bookinst.due_date}', extra_tags='borrowed-tag')
+    messages.add_message(request, messages.SUCCESS,
+                         f'You have successfully borrowed "{bookinst.book.title}, return on {bookinst.due_date}',
+                         extra_tags='borrowed-tag')
 
     return redirect('books_catalog:profile-books')
+
 
 @login_required
 def return_book(request, pk):
@@ -226,7 +246,7 @@ class CatalogSearchView(generic.ListView):
             return []
 
         books = Book.objects.annotate(
-            full_name = Concat('author__first_name', Value(' '), 'author__last_name')
+            full_name=Concat('author__first_name', Value(' '), 'author__last_name')
         ).filter(
             Q(title__icontains=query) |
             Q(isbn__icontains=query) |
@@ -240,6 +260,7 @@ class CatalogSearchView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['query'] = self.request.GET.get('q', '')
         return context
+
 
 @login_required
 @permission_required('books_catalog.can_mark_returned', raise_exception=True)
@@ -257,6 +278,7 @@ def update_book(request, pk):
 
     return render(request, 'books_catalog/update_book.html', {'form': form, 'book': book})
 
+
 @login_required
 @permission_required('books_catalog.can_mark_returned', raise_exception=True)
 def add_book(request):
@@ -270,6 +292,7 @@ def add_book(request):
         form = AddBookForm()
 
     return render(request, 'books_catalog/add_book.html', {'form': form})
+
 
 # @login_required
 # def submit_feedback(request, pk):

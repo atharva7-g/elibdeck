@@ -10,6 +10,9 @@ from datetime import date
 from django.contrib.auth.models import AbstractUser
 import uuid
 
+from elibdeck.settings import MEDIA_ROOT
+import os
+
 
 # Create your models here.
 
@@ -71,7 +74,7 @@ class Book(models.Model):
     isbn = models.CharField('ISBN', max_length=13, unique=True, help_text='13 character ISBN', blank=True, null=True)
 
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this book.')
-    cover_image = models.ImageField(upload_to='MEDIA_ROOT/covers/', blank=True, null=True)
+    cover_image = models.ImageField(upload_to='covers', blank=True, null=True)
     publication_date = models.IntegerField(blank=True, null=True, help_text='Date of publication')
 
     borrowers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="borrowed_books")
@@ -211,3 +214,17 @@ class Feedback(models.Model):
 
     class Meta:
         ordering = ['-created_at']  # To show the most recent feedback first
+
+# class PortalFeedback(models.Model):
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='feedbacks', on_delete=models.CASCADE, null=True)
+#     subject = models.CharField(max_length=255)
+#     rating = models.PositiveIntegerField(choices=[(i, str(i)) for i in range(1, 6)], default=True, null=True)  # Rating from 1 to 5)
+#     body = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#
+#     def __str__(self):
+#         return f"Feedback from {self.user}"
+#
+#     class Meta:
+#         ordering = ['-created_at']  # To show the most recent feedback first
+

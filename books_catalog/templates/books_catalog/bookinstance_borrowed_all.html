@@ -5,14 +5,14 @@
     {% if perms.books_catalog.can_mark_returned %}
         {% if bookinstance_list_all %}
             {% for bookinst in bookinstance_list_all %}
-                <div class="container mt-4">
+                <div class="card mt-4 p-3">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <ul style="list-style-type: none;">
                                 <li>
-                                    <a href="{% url 'books_catalog:book-detail' bookinst.book.pk %}">{{ bookinst.book.title }}</a>
-                                    {% if book.cover_image %}
-                                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid"/>
+                                    {% if bookinst.book.cover_image %}
+                                        <img src="{{ bookinst.book.cover_image.url }}" alt="{{ bookinst.book.title }}"
+                                             class="img-fluid" style="height: 200px; object-fit: cover;"/>
                                     {% else %}
                                         <p>No cover image available</p>
                                     {% endif %}
@@ -22,8 +22,17 @@
                         </div>
                         <div class="col-md-8">
                             <ul style="list-style-type: none;">
+                                <li>
+                                    <h3>
+                                        <a href="{% url 'books_catalog:book-detail' bookinst.book.pk %}">{{ bookinst.book.title }}</a>
+                                    </h3>
+                                </li>
                                 <li>Borrowed by {{ bookinst.borrower }}</li>
                                 <li>Due on {{ bookinst.due_date }}</li>
+                                <li>ISBN: {{ bookinst.book.isbn }}</li>
+                                <br>
+                                <li>{{ bookinst.book.summary }}</li>
+                                <br>
                                 <li class="{% if bookinst.is_overdue %}text-danger{% endif %}">
                                     {% if bookinst.is_overdue %}
                                         <p>
@@ -45,5 +54,4 @@
     {% else %}
         <h1>You are not a librarian. No access for you.</h1>
     {% endif %}
-    </div>
 {% endblock %}

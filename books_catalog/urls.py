@@ -22,5 +22,7 @@ urlpatterns = [
     path('book/<int:pk>/feedback/', views.submit_feedback, name='feedback'),
     path('book/<int:pk>/feedback/view', views.view_feedback, name='view-feedback'),
 
+    # path('feedback/', views.submit_portal_feedback, name='portal-feedback'),
+
     path('search/', views.CatalogSearchView.as_view(), name='search'),
 ]

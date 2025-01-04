@@ -1,20 +1,83 @@
 {% extends 'generic.html' %}
 
 {% block content %}
-    <p>Welcome to ELibDeck, a website developed by yours truly!</p>
-    <p>The library has the following record counts:</p>
-    <ul>
-        <li>
-            <strong>Books:</strong> {{ num_books }}
-        </li>
-        <li>
-            <strong>Copies:</strong> {{ num_instances }}
-        </li>
-        <li>
-            <strong>Copies available:</strong> {{ num_instances_available }}
-        </li>
-        <li>
-            <strong>Authors:</strong> {{ num_authors }}
-        </li>
-    </ul>
+    <div class="container-fluid px-4 py-5">
+        <h3 class="mb-5">Welcome to ElibDeck!</h3>
+
+        <!-- Fiction -->
+        <div class="mb-5">
+            <h2 class="h4 mb-4">Fiction</h2>
+            <div class="d-flex flex-nowrap overflow-auto gap-4 pb-3">
+                {% if fiction_books %}
+                    {% for book in fiction_books %}
+                        <div class="flex-shrink-0" style="width: 200px;">
+                            {% if book.cover_image %}
+                                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid mb-2"
+                                     style="height: 280px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center mb-2"
+                                     style="height: 280px;">
+                                    <span class="text-muted">No Cover</span>
+                                </div>
+                            {% endif %}
+                            <h3 class="h6 mb-1">{{ book.title }}</h3>
+                            <p class="text-muted small mb-2">{{ book.author }}</p>
+                            {% if book.is_available %}
+                                <a href="{% url 'book_detail' book.id %}"
+                                   class="btn btn-primary btn-sm d-block">Borrow</a>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No fiction books available</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Mystery -->
+        <div class="mb-5">
+            <h2 class="h4 mb-4">Mystery</h2>
+            <div class="d-flex flex-nowrap overflow-auto gap-4 pb-3">
+                {% if mystery_books %}
+                    {% for book in mystery_books %}
+                        <div class="flex-shrink-0" style="width: 200px;">
+                            {% if book.cover_image %}
+                                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid mb-2"
+                                     style="height: 280px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center mb-2"
+                                     style="height: 280px;">
+                                    <span class="text-muted">No Cover</span>
+                                </div>
+                            {% endif %}
+                            <h3 class="h6 mb-1">{{ book.title }}</h3>
+                            <p class="text-muted small mb-2">{{ book.author }}</p>
+                            {% if book.is_available %}
+                                <a href="{% url 'book_detail' book.id %}"
+                                   class="btn btn-primary btn-sm d-block">Borrow</a>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No mystery books available</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <style>
+        .overflow-auto {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .overflow-auto::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
 {% endblock %}

@@ -17,22 +17,38 @@
                     <td>PSRN:</td>
                     <td>{{ user.psrn }}</td>
                 </tr>
-            {% else %}
-                <tr>
-                    <td>Hostel room:</td>
-                    <td>{{ user.room }}</td>
-                </tr>
             {% endif %}
+
+            {% if not perms.books_catalog.can_mark_returned %}
+                {% for field in form %}
+                    <tr>
+                        <td><label for="{{ field.id_for_label }}">{{ field.label }}:</label></td>
+                        <td>{{ field }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+
             <tr>
                 <td>Email:</td>
                 <td>{{ user.email }}</td>
             </tr>
         </table>
 
-        <a href="{% url 'users:edit-profile' %}" class="btn btn-primary"
-           style="text-decoration: none; padding: 10px 20px;">
-            Edit Profile
-        </a>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    {% if 'edit-profile-success' in message.tags %}
+                        <div class="alert alert-success">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
+        <button type="submit" class="btn btn-primary">Save changes</button>
+
 
         {#        {% if not perms.books_catalog.can_mark_returned %}#}
         {#            <a href="{% url 'books_catalog:profile-books' %}">Your borrowed books</a>#}

@@ -1,0 +1,22 @@
+{% extends 'generic.html' %}
+
+{% block content %}
+    {% if perms.books_catalog.can_mark_returned %}
+        {% if feedbacks %}
+            <ul class="list-group">
+                {% for feedback in feedbacks %}
+                    <li class="list-group-item">
+                        <strong>{{ feedback.subject }}</strong><br>
+                        <p>{{ feedback.body }}</p>
+                        <small>Rating: {{ feedback.rating }}/5</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No feedback yet for this book.</p>
+        {% endif %}
+
+    {% else %}
+        <p>Only for librarians.</p>
+    {% endif %}
+{% endblock %}
