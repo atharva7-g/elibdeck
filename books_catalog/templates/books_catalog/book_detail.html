@@ -15,17 +15,19 @@
                     {% endif %}
                     <br>
                     <br>
-                    {% if not perms.books_catalog.can_mark_returned %}
-                        <a href="{% url 'books_catalog:feedback' pk=book.pk %}" class="btn btn-primary">Submit
-                            Feedback</a>
-                    {% else %}
-                        <div class="card" style="width: 8em;">
-                            <div class="card-body">
-                                <p class="card-text">{{ average_rating|default:"No ratings yet" }}</p>
-                            </div>
-                        </div>
-                    {% endif %}
 
+                    {#                    {% if not perms.books_catalog.can_mark_returned %}#}
+                    {#                        <a href="{% url 'books_catalog:feedback' pk=book.pk %}" class="btn btn-primary">Submit#}
+                    {#                            Feedback</a>#}
+                    {#                    {% else %}#}
+                    {#                        <div class="card" style="width: 8em;">#}
+                    {#                            <div class="card-body">#}
+                    {#                                <p class="card-text">{{ average_rating|default:"No ratings yet" }}</p>#}
+                    {#                            </div>#}
+                    {#                        </div>#}
+                    {#                    {% endif %}#}
+                    <div class="rating-section">
+                    </div>
                 </div>
 
                 <div class="col-md-8">

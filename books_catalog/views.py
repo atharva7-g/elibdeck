@@ -7,7 +7,7 @@ from django.contrib.messages.context_processors import messages
 from django.db.models.signals import post_migrate
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory, PortalFeedback
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
@@ -102,7 +102,6 @@ class BookDetailView(generic.DetailView):
     model = Book
     template_name = 'books_catalog/book_detail.html'
     context_object_name = 'book'
-
 
 class AuthorDetailView(generic.DetailView):
     model = Author

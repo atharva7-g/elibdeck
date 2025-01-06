@@ -7,69 +7,142 @@
         <!-- Fiction -->
         <div class="mb-5">
             <h2 class="h4 mb-4">Fiction</h2>
-            <div class="d-flex flex-nowrap overflow-auto gap-4 pb-3">
-                {% if fiction_books %}
-                    {% for book in fiction_books %}
-                        <div class="flex-shrink-0" style="width: 200px;">
-                            {% if book.cover_image %}
-                                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid mb-2"
-                                     style="height: 280px; object-fit: cover;">
-                            {% else %}
-                                <div class="bg-light d-flex align-items-center justify-content-center mb-2"
-                                     style="height: 280px;">
-                                    <span class="text-muted">No Cover</span>
-                                </div>
-                            {% endif %}
-                            <h3 class="h6 mb-1">{{ book.title }}</h3>
-                            <p class="text-muted small mb-2">{{ book.author }}</p>
-                            {% if book.is_available %}
-                                <a href="{% url 'book_detail' book.id %}"
-                                   class="btn btn-primary btn-sm d-block">Borrow</a>
-                            {% else %}
-                                <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted">No fiction books available</p>
-                {% endif %}
+            <div class="card mt-4 p-3">
+                <div class="d-flex flex-nowrap overflow-auto gap-4 pb-3">
+                    {% if fiction_books %}
+                        {% for book in fiction_books %}
+                            <div class="flex-shrink-0" style="width: 200px;">
+                                {% if book.cover_image %}
+                                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid mb-2"
+                                         style="height: 280px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center mb-2"
+                                         style="height: 280px;">
+                                        <span class="text-muted">No Cover</span>
+                                    </div>
+                                {% endif %}
+                                <a href="{{ book.get_absolute_url }}"><h3 class="h6 mb-1">{{ book.title }}</h3></a>
+                                <p class="text-muted small mb-2">{{ book.author }}</p>
+                                {#                                {% if book.is_available %}#}
+                                {#                                    <a href="{% url 'book_detail' book.id %}"#}
+                                {#                                       class="btn btn-primary btn-sm d-block">Borrow</a>#}
+                                {#                                {% else %}#}
+                                {#                                    <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>#}
+                                {#                                {% endif %}#}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No fiction books available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Adventure Section -->
+        <div class="mb-5">
+            <h2 class="h4 mb-4">Adventure</h2>
+            <div class="card mt-4 p-3">
+                <div class="d-flex flex-nowrap overflow-auto gap-4 pb-3">
+                    {% if adventure_books %}
+                        {% for book in adventure_books %}
+                            <div class="flex-shrink-0" style="width: 200px;">
+                                {% if book.cover_image %}
+                                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid mb-2"
+                                         style="height: 280px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center mb-2"
+                                         style="height: 280px;">
+                                        <span class="text-muted">No Cover</span>
+                                    </div>
+                                {% endif %}
+                                <a href="{{ book.get_absolute_url }}"><h3 class="h6 mb-1">{{ book.title }}</h3></a>
+                                <p class="text-muted small mb-2">{{ book.author }}</p>
+                                <p class="text-muted small mb-1">{% if book.series %}Series:
+                                    {{ book.series }}{% endif %}</p>
+                                {% if book.is_available %}
+                                    <a href="{% url 'book_detail' book.id %}"
+                                       class="btn btn-primary btn-sm d-block">Borrow</a>
+                                {% else %}
+                                    <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No adventure books available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Romance Section -->
+        <div class="mb-5">
+            <h2 class="h4 mb-4">Romance</h2>
+            <div class="card mt-4 p-3">
+                <div class="d-flex flex-nowrap overflow-auto gap-4 pb-3">
+                    {% if romance_books %}
+                        {% for book in romance_books %}
+                            <div class="flex-shrink-0" style="width: 200px;">
+                                {% if book.cover_image %}
+                                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid mb-2"
+                                         style="height: 280px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center mb-2"
+                                         style="height: 280px;">
+                                        <span class="text-muted">No Cover</span>
+                                    </div>
+                                {% endif %}
+                                <a href="{{ book.get_absolute_url }}"><h3 class="h6 mb-1">{{ book.title }}</h3></a>
+                                <p class="text-muted small mb-2">{{ book.author }}</p>
+                                <p class="text-muted small mb-1">{{ book.sub_genre }}</p>
+                                {% if book.is_available %}
+                                    <a href="{% url 'book_detail' book.id %}"
+                                       class="btn btn-primary btn-sm d-block">Borrow</a>
+                                {% else %}
+                                    <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No romance books available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Dystopian Section -->
+        <div class="mb-5">
+            <h2 class="h4 mb-4">Dystopian</h2>
+            <div class="card mt-4 p-3">
+                <div class="d-flex flex-nowrap overflow-auto gap-4 pb-3">
+                    {% if dystopian_books %}
+                        {% for book in dystopian_books %}
+                            <div class="flex-shrink-0" style="width: 200px;">
+                                {% if book.cover_image %}
+                                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid mb-2"
+                                         style="height: 280px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center mb-2"
+                                         style="height: 280px;">
+                                        <span class="text-muted">No Cover</span>
+                                    </div>
+                                {% endif %}
+                                <a href="{{ book.get_absolute_url }}"><h3 class="h6 mb-1">{{ book.title }}</h3></a>
+                                <p class="text-muted small mb-2">{{ book.author }}</p>
+                                <p class="text-muted small mb-1">{{ book.publication_year }}</p>
+                                {#                                {% if book.is_available %}#}
+                                {#                                    <a href="{% url 'book_detail' book.id %}"#}
+                                {#                                       class="btn btn-primary btn-sm d-block">Borrow</a>#}
+                                {#                                {% else %}#}
+                                {#                                    <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>#}
+                                {#                                {% endif %}#}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No dystopian books available</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
-        <!-- Mystery -->
-        <div class="mb-5">
-            <h2 class="h4 mb-4">Mystery</h2>
-            <div class="d-flex flex-nowrap overflow-auto gap-4 pb-3">
-                {% if mystery_books %}
-                    {% for book in mystery_books %}
-                        <div class="flex-shrink-0" style="width: 200px;">
-                            {% if book.cover_image %}
-                                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-fluid mb-2"
-                                     style="height: 280px; object-fit: cover;">
-                            {% else %}
-                                <div class="bg-light d-flex align-items-center justify-content-center mb-2"
-                                     style="height: 280px;">
-                                    <span class="text-muted">No Cover</span>
-                                </div>
-                            {% endif %}
-                            <h3 class="h6 mb-1">{{ book.title }}</h3>
-                            <p class="text-muted small mb-2">{{ book.author }}</p>
-                            {% if book.is_available %}
-                                <a href="{% url 'book_detail' book.id %}"
-                                   class="btn btn-primary btn-sm d-block">Borrow</a>
-                            {% else %}
-                                <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted">No mystery books available</p>
-                {% endif %}
-            </div>
-        </div>
 
     </div>
-
     <style>
         .overflow-auto {
             -ms-overflow-style: none;
