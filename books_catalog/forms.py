@@ -1,7 +1,7 @@
 import datetime
 
 from django import forms
-from .models import Feedback, LibrarySettings, Book, Author
+from .models import LibrarySettings, Book, Author, PortalFeedback
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -24,23 +24,13 @@ class RenewBookForm(forms.Form):
         return data_date
 
 
-class FeedbackForm(forms.ModelForm):
+class PortalFeedbackForm(forms.ModelForm):
     class Meta:
-        model = Feedback
-        fields = ['subject', 'body', 'rating']
+        model = PortalFeedback
+        fields = ['subject', 'body']
         widgets = {
-            'subject': forms.TextInput(attrs={
-                'placeholder': 'Enter the subject of your feedback',
-                'class': 'form-control',
-            }),
-            'body': forms.Textarea(attrs={
-                'placeholder': 'Write your detailed feedback here',
-                'rows': 5,
-                'class': 'form-control',
-            }),
-            'rating': forms.Select(attrs={
-                'class': 'form-control',
-            }),
+            'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subject'}),
+            'body': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write your feedback here...'}),
         }
 
 

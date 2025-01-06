@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Book, Author, Genre, BookInstance, Language, Feedback
-
+from .models import Book, Author, Genre, BookInstance, Language
 # Register your models here.
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'date_of_birth', 'date_of_death')
@@ -26,12 +25,12 @@ class BookInstanceAdmin(admin.ModelAdmin):
         }),
     )
 
-@admin.register(Feedback)
-class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ('book', 'user', 'rating', 'subject', 'created_at')  # Columns in the admin list view
-    list_filter = ('rating', 'created_at', 'book')  # Filters in the sidebar
-    search_fields = ('subject', 'body', 'book__title')
-    ordering = ('-created_at',)
+# @admin.register(Feedback)
+# class FeedbackAdmin(admin.ModelAdmin):
+#     list_display = ('book', 'user', 'rating', 'subject', 'created_at')  # Columns in the admin list view
+#     list_filter = ('rating', 'created_at', 'book')  # Filters in the sidebar
+#     search_fields = ('subject', 'body', 'book__title')
+#     ordering = ('-created_at',)
 
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Genre)

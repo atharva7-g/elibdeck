@@ -8,13 +8,12 @@ from django.db.models.signals import post_migrate
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from books_catalog.forms import RenewBookForm
-from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory, Feedback
+from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory, PortalFeedback
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.db.models import Q, Value, Avg
 from django.db.models.functions import Concat
-from .forms import FeedbackForm, LibrarySettingsForm, UpdateBookForm, AddBookForm
+from .forms import LibrarySettingsForm, UpdateBookForm, AddBookForm, RenewBookForm, PortalFeedbackForm
 from django.contrib import messages
 
 
@@ -293,52 +292,21 @@ def add_book(request):
 
     return render(request, 'books_catalog/add_book.html', {'form': form})
 
-
-# @login_required
-# def submit_feedback(request, pk):
-#     book = get_object_or_404(Book, id=pk)
-#     if request.method == 'POST':
-#         form = FeedbackForm(request.POST)
-#         if form.is_valid():
-#             feedback = form.save(commit=False)
-#             feedback.book = book
-#             feedback.save()
-#     else:
-#         form = FeedbackForm()
-#
-#     return render(request, 'books_catalog/feedback.html', {'form': form, 'book': book})
-
 @login_required
-def submit_feedback(request, pk):
-    book = get_object_or_404(Book, pk=pk)  # Fetch the book by primary key
-
-    if request.user not in book.borrowers.all():
-        messages.error(request, "You can only leave feedback for books you have borrowed.")
-
+def submit_portal_feedback(request):
     if request.method == 'POST':
-        form = FeedbackForm(request.POST)
+        form = PortalFeedbackForm(request.POST)
         if form.is_valid():
             feedback = form.save(commit=False)
-            feedback.book = book
+            feedback.user = request.user
             feedback.save()
-            messages.success(request, 'Thank you for your feedback!')
-            form = FeedbackForm()
-
-            return redirect('books_catalog:profile-books')
+            messages.success(request, 'Your feedback has been submitted.', extra_tags='portal-feedback-success')
     else:
-        form = FeedbackForm()
-
-    return render(request, 'books_catalog/feedback.html', {'form': form, 'book': book})
+        form = PortalFeedbackForm()
+    return render(request, 'books_catalog/submit_portal_feedback.html', {'form': form})
 
 @login_required
 @permission_required('books_catalog.can_mark_returned', raise_exception=True)
-def view_feedback(request, pk):
-    book = get_object_or_404(Book, pk=pk)
-    feedbacks = book.feedbacks.all()
-    average_rating = feedbacks.aggregate(Avg('rating'))['rating__avg']
-
-    return render(request, 'books_catalog/view_feedback.html', {
-        'book': book,
-        'feedbacks': feedbacks,
-        'average_rating': average_rating
-    })
+def view_portal_feedback(request):
+    feedbacks = PortalFeedback.objects.all().order_by('-created_at')
+    return render(request, 'books_catalog/view_portal_feedback.html', {'feedbacks': feedbacks})

@@ -19,10 +19,9 @@ urlpatterns = [
     path('book/<uuid:pk>/renew/', views.renew_book_librarian, name='renew-book-librarian'),
     path('book/<uuid:pk>/borrow', views.borrow_book, name='borrow-book'),
     path('book/<uuid:pk>/return/', views.return_book, name='return-book'),
-    path('book/<int:pk>/feedback/', views.submit_feedback, name='feedback'),
-    path('book/<int:pk>/feedback/view', views.view_feedback, name='view-feedback'),
 
-    # path('feedback/', views.submit_portal_feedback, name='portal-feedback'),
+    path('feedback/submit', views.submit_portal_feedback, name='submit-portal-feedback'),
+    path('feedback/view', views.view_portal_feedback, name='view-portal-feedback'),
 
     path('search/', views.CatalogSearchView.as_view(), name='search'),
 ]

@@ -201,30 +201,12 @@ class BorrowingHistory(models.Model):
     def is_returned(self):
         return self.return_date is not None
 
-class Feedback(models.Model):
-    book = models.ForeignKey(Book, related_name='feedbacks', on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='feedbacks', on_delete=models.CASCADE, null=True)
-    subject = models.CharField(max_length=255)
-    rating = models.PositiveIntegerField(choices=[(i, str(i)) for i in range(1, 6)], default=True, null=True)  # Rating from 1 to 5)
+
+class PortalFeedback(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    subject = models.CharField(max_length=100)
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Feedback from {self.user} on {self.book.title}"
-
-    class Meta:
-        ordering = ['-created_at']  # To show the most recent feedback first
-
-# class PortalFeedback(models.Model):
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='feedbacks', on_delete=models.CASCADE, null=True)
-#     subject = models.CharField(max_length=255)
-#     rating = models.PositiveIntegerField(choices=[(i, str(i)) for i in range(1, 6)], default=True, null=True)  # Rating from 1 to 5)
-#     body = models.TextField()
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     def __str__(self):
-#         return f"Feedback from {self.user}"
-#
-#     class Meta:
-#         ordering = ['-created_at']  # To show the most recent feedback first
-
+        return f'{self.subject} - {self.user}'
