@@ -1,26 +1,46 @@
 {% extends "generic.html" %}
 
 {% block content %}
-    <h1>Borrowed books</h1>
+    <h1>Borrowed Books</h1>
 
     {% if bookinstance_list %}
-        <ul>
-
+        <table class="table table-striped table-bordered">
+            <tbody>
             {% for bookinst in bookinstance_list %}
-                <li class="{% if bookinst.is_overdue %}text-danger{% endif %}">
-                    <a href="{% url 'books_catalog:book-detail' bookinst.book.pk %}">{{ bookinst.book.title }}</a>
-                    (Due date: {{ bookinst.due_date }})
-                    <a href="{% url 'books_catalog:return-book' bookinst.id %}" class="btn btn-primary">Return
-                        Book</a>
-                    <p>
-                    {% if bookinst.is_overdue %}
-                        Overdue by: {{ bookinst.overdue_by }} days. Late fee: {{ bookinst.total_late_fee }}
-                    {% endif %}
-                    </p>
-                </li>
-            {% endfor %}
-        </ul>
+                <tr class="{% if bookinst.is_overdue %}table-danger{% endif %}">
+                    <!-- Book Cover -->
+                    <td class="text-center align-middle" style="width: 120px;">
+                        <img src="{{ bookinst.book.cover_image.url }}" alt="{{ bookinst.book.title }}"
+                             class="img-fluid" style="max-width: 100px;">
+                    </td>
 
+                    <!-- Book Title -->
+                    <td>
+                        <a href="{% url 'books_catalog:book-detail' bookinst.book.pk %}">
+                            {{ bookinst.book.title }}
+                        </a>
+                        <br>
+                        by {{ bookinst.book.author }}
+                        <br>
+                        (Due date: {{ bookinst.due_date }})
+                    </td>
+
+                    <td class="text-center align-middle">
+                        <a href="{% url 'books_catalog:return-book' bookinst.id %}" class="btn btn-primary">
+                            Return Book
+                        </a>
+                    </td>
+
+                    {% if bookinst.is_overdue %}
+                        <td>
+                            <p>Overdue by: {{ bookinst.overdue_by }} days</p>
+                            <p>Late fee: {{ bookinst.total_late_fee }}</p>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% else %}
         <p>You have not borrowed any books.</p>
     {% endif %}

@@ -29,6 +29,7 @@
             </tr>
         </table>
 
+        <br>
         <a href="{% url 'users:edit-profile' %}" class="btn btn-primary"
            style="text-decoration: none; padding: 10px 20px;">
             Edit Profile
@@ -37,5 +38,7 @@
         {#        {% if not perms.books_catalog.can_mark_returned %}#}
         {#            <a href="{% url 'books_catalog:profile-books' %}">Your borrowed books</a>#}
         {#        {% endif %}#}
+
+
     </div>
 {% endblock %}
