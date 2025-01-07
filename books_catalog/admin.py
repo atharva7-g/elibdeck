@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Book, Author, Genre, BookInstance, Language
+from .models import Book, Author, Genre, BookInstance, Language, BorrowingHistory
 # Register your models here.
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'date_of_birth', 'date_of_death')
@@ -24,6 +24,21 @@ class BookInstanceAdmin(admin.ModelAdmin):
             'fields': ('status', 'due_date', 'borrower')
         }),
     )
+
+class BorrowingHistoryAdmin(admin.ModelAdmin):
+    list_display = ('user', 'bookinst', 'borrowed_date', 'return_date', 'is_returned')
+    list_filter = ('user', 'bookinst', 'borrowed_date', 'return_date')
+    search_fields = ('user__username', 'bookinst__book__title')
+    ordering = ('-borrowed_date',)
+
+    # Optional: Adding functionality to display whether the book has been returned or not
+    def is_returned(self, obj):
+        return obj.return_date is not None
+    is_returned.boolean = True
+    is_returned.short_description = 'Returned'
+
+admin.site.register(BorrowingHistory, BorrowingHistoryAdmin)
+
 
 # @admin.register(Feedback)
 # class FeedbackAdmin(admin.ModelAdmin):

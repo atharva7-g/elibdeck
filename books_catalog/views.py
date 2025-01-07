@@ -187,6 +187,7 @@ def borrow_book(request, pk):
     ISSUE_PERIOD = library_settings.ISSUE_PERIOD
 
     bookinst.book.borrowers.add(request.user)
+    BorrowingHistory.objects.create(bookinst=bookinst, user=request.user)
 
     bookinst.status = 'o'
     bookinst.borrower = request.user
@@ -205,6 +206,7 @@ def return_book(request, pk):
     """Handles the return of a book."""
     # Get the BookInstance object using the ID passed in the URL
     bookinst = get_object_or_404(BookInstance, id=pk)
+
     # Check if the current user is the one who borrowed the book
     if bookinst.borrower != request.user:
         messages.error(request, 'You cannot return a book you did not borrow.')
@@ -220,6 +222,11 @@ def return_book(request, pk):
     bookinst.borrower = None
     bookinst.due_date = None  # Optional: remove due back date
     bookinst.save()
+
+    borrow = BorrowingHistory.objects.get(bookinst=bookinst, user=request.user, return_date__isnull=True)
+    borrow.return_date = timezone.now()
+    borrow.save()
+
 
     # Provide a success message
     messages.success(request, f'You have successfully returned "{bookinst.book.title}".')
