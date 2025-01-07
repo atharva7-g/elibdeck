@@ -11,6 +11,8 @@ urlpatterns = [
     path('author/<int:pk>', views.AuthorDetailView.as_view(), name='author-detail'),
     path('profile/books', views.LoanedToUserListView.as_view(), name='profile-books'),
 
+    path('profile/history', views.issue_history, name='issue-history'),
+
     path('librarian/borrowed', views.AllLoanedListView.as_view(), name='all-borrowed-books'),
     path('librarian/update-settings', views.update_library_settings, name='update-library-settings'),
     path('book/<int:pk>/edit', views.update_book, name='update-book'),

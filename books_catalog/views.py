@@ -13,6 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.db.models import Q, Value, Avg
 from django.db.models.functions import Concat
+from django.conf import settings
 from .forms import LibrarySettingsForm, UpdateBookForm, AddBookForm, RenewBookForm, PortalFeedbackForm
 from django.contrib import messages
 
@@ -309,3 +310,8 @@ def submit_portal_feedback(request):
 def view_portal_feedback(request):
     feedbacks = PortalFeedback.objects.all().order_by('-created_at')
     return render(request, 'books_catalog/view_portal_feedback.html', {'feedbacks': feedbacks})
+
+@login_required
+def issue_history(request):
+    borrows = BorrowingHistory.objects.filter(user=request.user).order_by('-borrowed_date')
+    return render(request, 'books_catalog/issue_history.html', {'borrows': borrows})

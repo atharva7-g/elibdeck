@@ -1,0 +1,48 @@
+{% extends 'generic.html' %}
+
+{% block content %}
+    <h1>Issue History for {{ request.user.username }}</h1>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Issue History for {{ request.user.username }}</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Issue Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for borrow in borrows %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td> <!-- Row number -->
+                        <td>{{ borrow.bookinst.book.title }}</td>
+                        <td>{{ borrow.bookinst.book.author }}</td>
+                        <td>{{ borrow.borrowed_date }}</td>
+                        <td>
+                            {% if borrow.return_date %}
+                                {{ borrow.return_date }}
+                            {% else %}
+                                <span class="text-warning">Not returned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if borrow.is_returned %}
+                                <span class="badge bg-success">Returned</span>
+                            {% else %}
+                                <span class="badge bg-danger">Issued</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
