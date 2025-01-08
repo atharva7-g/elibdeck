@@ -43,5 +43,6 @@
         </table>
     {% else %}
         <p>You have not borrowed any books.</p>
+        <p>See books that you have <a href="{% url 'books_catalog:issue-history' %}">previously borrowed</a></p>
     {% endif %}
 {% endblock %}

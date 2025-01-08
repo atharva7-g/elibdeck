@@ -8,13 +8,13 @@ from django.db.models.signals import post_migrate
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory, PortalFeedback
+from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory, PortalFeedback, BookRating
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.db.models import Q, Value, Avg
 from django.db.models.functions import Concat
 from django.conf import settings
-from .forms import LibrarySettingsForm, UpdateBookForm, AddBookForm, RenewBookForm, PortalFeedbackForm
+from .forms import LibrarySettingsForm, UpdateBookForm, AddBookForm, RenewBookForm, PortalFeedbackForm, BookRatingForm
 from django.contrib import messages
 
 
@@ -103,6 +103,54 @@ class BookDetailView(generic.DetailView):
     model = Book
     template_name = 'books_catalog/book_detail.html'
     context_object_name = 'book'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_rating = None
+        form = None
+
+        # Get user rating if authenticated
+        if self.request.user.is_authenticated:
+            user_rating = BookRating.objects.filter(book=self.object, user=self.request.user).first()
+            form = BookRatingForm(instance=user_rating)
+
+        context.update({
+            'form': form,
+            'user_rating': user_rating,
+            'average_rating': self.object.average_rating(),
+        })
+
+        borrowed = BorrowingHistory.objects.filter(user=self.request.user, bookinst__book=self.object).exists()
+
+        context['can_rate'] = borrowed  # Only allow rating if the book has been borrowed
+        if borrowed:
+            rating = BookRating.objects.filter(user=self.request.user, book=self.object).first()
+            if rating:
+                context['rating'] = rating
+            else:
+                context['rating_form'] = BookRatingForm()
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()  # Fetch the book object
+        user_rating = BookRating.objects.filter(book=self.object, user=request.user).first()
+        form = BookRatingForm(request.POST, instance=user_rating)
+
+        if not BorrowingHistory.objects.filter(user=self.request.user, bookinst__book=self.object).exists():
+            messages.error(request, "You can only rate a book that you have borrowed.", extra_tags='submit-rating-error')
+
+        if form.is_valid():
+            rating = form.save(commit=False)
+            rating.book = self.object
+            rating.user = request.user
+            rating.save()
+            messages.success(request, "Rating saved.", extra_tags='submit-rating-success')
+            return redirect(reverse('books_catalog:book-detail', kwargs={'pk': self.object.pk}))
+
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
 
 class AuthorDetailView(generic.DetailView):
     model = Author

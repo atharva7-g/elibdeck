@@ -15,7 +15,7 @@ def user_dashboard(request):
         form = EditUserForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            return redirect('user_dashboard')  # Redirect to avoid resubmission issues
+            return redirect('users:profile-page')  # Redirect to avoid resubmission issues
     else:
         form = EditUserForm(instance=user)
 
@@ -33,7 +33,7 @@ def edit_profile(request):
         form = EditUserForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your profile has been updated successfully!', extra_tags='edit-profile-success')
+            return redirect('users:profile-page')
     else:
         form = EditUserForm(instance=user)
 

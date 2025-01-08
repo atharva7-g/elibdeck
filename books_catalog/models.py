@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import UniqueConstraint
+from django.db.models import UniqueConstraint, Avg
 from django.db.models.functions import Lower
 from django.conf import settings
 from django.urls import reverse
@@ -79,11 +79,17 @@ class Book(models.Model):
 
     borrowers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="borrowed_books")
 
+    def average_rating(self):
+        average_ratings = self.ratings.aggregate(Avg('value'))
+        return average_ratings['value__avg'] or 0
+
+
     class Meta:
         ordering = ['title', '-publication_date']
 
     def __str__(self):
         return self.title
+
 
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this book."""
@@ -210,3 +216,22 @@ class PortalFeedback(models.Model):
 
     def __str__(self):
         return f'{self.subject} - {self.user}'
+
+class BookRating(models.Model):
+    book = models.ForeignKey(Book, related_name='ratings', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    value = models.IntegerField()  # Value between 1 and 5
+
+    # def clean(self):
+    #     if not BorrowingHistory.objects.filter(user=self.user, book=self.book).exists():
+    #         raise ValidationError('You can only rate a book you have borrowed.')
+    #
+    # def save(self, *args, **kwargs):
+    #     self.clean()
+    #     super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ('book', 'user')
+
+    def __str__(self):
+        return f'{self.user} rated {self.book.title} - {self.value}'

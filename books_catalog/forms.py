@@ -1,7 +1,7 @@
 import datetime
 
 from django import forms
-from .models import LibrarySettings, Book, Author, PortalFeedback
+from .models import LibrarySettings, Book, Author, PortalFeedback, BookRating, BorrowingHistory
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -66,3 +66,26 @@ class UpdateBookForm(forms.ModelForm):
         widgets = {
             'publication_date': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class BookRatingForm(forms.ModelForm):
+    class Meta:
+        model = BookRating
+        fields = ['value']
+        widgets = {
+            'value': forms.RadioSelect(choices=[(i, f'{i} Star{"s" if i > 1 else ""}') for i in range(1, 6)])
+        }
+
+    # def __init__(self, *args, **kwargs):
+        # self.book = kwargs.pop('book')
+        # super().__init__(*args, **kwargs)
+
+        # self.fields['value'].label = None
+
+
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #
+    #     if not BorrowingHistory.objects.filter(user=self.instance.user, book=self.book).exists():
+    #         raise forms.ValidationError('You can only rate a book you have borrowed.')
+    #
+    #     return cleaned_data

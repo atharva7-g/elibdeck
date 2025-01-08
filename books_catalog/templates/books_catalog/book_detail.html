@@ -2,7 +2,6 @@
 
 {% block content %}
     <div style="margin-left:20px;margin-top:20px">
-        <h1>{{ book.title }}</h1>
 
         <div class="card mt-4 p-3">
             <div class="row">
@@ -13,6 +12,28 @@
                     {% else %}
                         <p>No cover image available</p>
                     {% endif %}
+
+                    <!-- User's rating form -->
+                    {% if user.is_authenticated %}
+                        <h4>Rating</h4>
+                        {% if can_rate %}
+                            {% if not user_rating %}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {{ form.value }}
+                                    <br>
+                                    <button type="submit">Submit Rating</button>
+                                </form>
+                            {% else %}
+                                <p>{{ user_rating.value }} star{{ user_rating.value|pluralize }}</p>
+                            {% endif %}
+                        {% else %}
+                            <p>You can only rate a book that you have borrowed.</p>
+                        {% endif %}
+                    {% else %}
+                        <p><a href="{% url 'account_login' %}">Log in</a> to rate this book.</p>
+                    {% endif %}
+
                     <br>
                     <br>
 
@@ -31,7 +52,14 @@
                 </div>
 
                 <div class="col-md-8">
-                    <p><strong>Author:</strong> <a href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></p>
+
+                    <h1>{{ book.title }}</h1>
+                    <p>
+                        <strong>by</strong> <a href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+                        <br>
+                        {{ average_rating|floatformat:1 }} / 5
+                    </p>
+
                     <!-- author detail link not yet defined -->
                     <p><strong>Summary:</strong> {{ book.summary }}</p>
                     <p><strong>ISBN:</strong> {{ book.isbn }}</p>
@@ -41,6 +69,7 @@
             </div>
         </div>
         <br>
+
         <h4>Copies</h4>
 
         {% for copy in book.bookinstance_set.all %}
