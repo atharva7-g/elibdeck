@@ -57,7 +57,7 @@
                     <p>
                         <strong>by</strong> <a href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
                         <br>
-                        {{ average_rating|floatformat:1 }} / 5
+                        {{ average_rating|floatformat:1 }} / 5 ({{ num_ratings }} ratings)
                     </p>
 
                     <!-- author detail link not yet defined -->

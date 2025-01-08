@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import UniqueConstraint, Avg
+from django.db.models import UniqueConstraint, Avg, Count
 from django.db.models.functions import Lower
 from django.conf import settings
 from django.urls import reverse
@@ -83,6 +83,9 @@ class Book(models.Model):
         average_ratings = self.ratings.aggregate(Avg('value'))
         return average_ratings['value__avg'] or 0
 
+    def num_ratings(self):
+        # Calculate the number of ratings
+        return self.ratings.aggregate(Count('value'))['value__count'] or 0
 
     class Meta:
         ordering = ['title', '-publication_date']

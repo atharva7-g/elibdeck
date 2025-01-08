@@ -119,6 +119,7 @@ class BookDetailView(generic.DetailView):
             'form': form,
             'user_rating': user_rating,
             'average_rating': self.object.average_rating(),
+            'num_ratings': self.object.num_ratings(),
         })
 
         borrowed = BorrowingHistory.objects.filter(user=self.request.user, bookinst__book=self.object).exists()
