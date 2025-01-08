@@ -6,6 +6,7 @@ from django.shortcuts import render
 import openpyxl
 from django.views import View
 
+from django.conf import settings
 from django.http import FileResponse, HttpResponse
 from django.contrib import messages
 from books_catalog.models import Genre, Book, Author
@@ -15,7 +16,7 @@ from .forms import DataUploadForm
 # Create your views here.
 def data_upload(request):
     if "GET" == request.method and request.GET.get('download_template'):
-        file_path = os.path.join('media', 'test.xlsx')
+        file_path = os.path.join(settings.MEDIA_ROOT, 'template.xlsx')
         if not os.path.exists(file_path):
             return HttpResponse("Template file not found", status=404)
         response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename='template.xlsx')
