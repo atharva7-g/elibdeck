@@ -42,6 +42,10 @@ class LibrarySettingsForm(forms.ModelForm):
             'LATE_FEE': forms.NumberInput(attrs={'step': '0.5'}),  # Add step for decimal input
             'ISSUE_PERIOD': forms.NumberInput(attrs={'min': '1'}),  # Minimum value for issuing period
         }
+        labels = {
+            'LATE_FEE': 'Late Fee',
+            'ISSUE_PERIOD': 'Issue Period',
+        }
 
 
 class AddAuthorForm(forms.ModelForm):

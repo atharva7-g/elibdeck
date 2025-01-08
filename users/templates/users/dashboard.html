@@ -30,9 +30,11 @@
         </table>
 
         <br>
-        <a href="{% url 'users:edit-profile' %}" class="btn btn-primary">
-            Edit Profile
-        </a>
+        {% if not perms.books_catalog.can_mark_returned %}
+            <a href="{% url 'users:edit-profile' %}" class="btn btn-primary">
+                Edit Profile
+            </a>
+        {% endif %}
 
         {#        {% if not perms.books_catalog.can_mark_returned %}#}
         {#            <a href="{% url 'books_catalog:profile-books' %}">Your borrowed books</a>#}
