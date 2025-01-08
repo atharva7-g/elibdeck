@@ -367,6 +367,13 @@ def view_portal_feedback(request):
     return render(request, 'books_catalog/view_portal_feedback.html', {'feedbacks': feedbacks})
 
 @login_required
+@permission_required('books_catalog.can_mark_returned', raise_exception=True)
+def feedback_detail(request, feedback_id):
+    feedback = get_object_or_404(PortalFeedback, id=feedback_id)
+    return render(request, 'books_catalog/view_portal_feedback_detail.html', {'feedback': feedback})
+
+
+@login_required
 def issue_history(request):
     borrows = BorrowingHistory.objects.filter(user=request.user).order_by('-borrowed_date')
     return render(request, 'books_catalog/issue_history.html', {'borrows': borrows})

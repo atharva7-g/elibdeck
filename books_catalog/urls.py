@@ -24,6 +24,7 @@ urlpatterns = [
 
     path('feedback/submit', views.submit_portal_feedback, name='submit-portal-feedback'),
     path('feedback/view', views.view_portal_feedback, name='view-portal-feedback'),
+    path('feedback/view/<int:feedback_id>/', views.feedback_detail, name='view-portal-feedback-detail'),  # Feedback details
 
     path('search/', views.CatalogSearchView.as_view(), name='search'),
 ]

@@ -1,0 +1,16 @@
+{% extends 'generic.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>{{ feedback.subject }}</h2>
+        <p><strong>Submitted by:</strong> {{ feedback.user.username }}</p>
+        <p><strong>Submitted on:</strong> {{ feedback.created_at|date:"Y-m-d H:i" }}</p>
+        <div class="card mt-3">
+            <div class="card-body">
+                {{ feedback.body }}
+            </div>
+        </div>
+        <br>
+        <a href="{% url 'books_catalog:view-portal-feedback' %}" class="btn btn-primary">Back to Feedback List</a>
+    </div>
+{% endblock %}

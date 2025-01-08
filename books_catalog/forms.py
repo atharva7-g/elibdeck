@@ -27,7 +27,7 @@ class RenewBookForm(forms.Form):
 class PortalFeedbackForm(forms.ModelForm):
     class Meta:
         model = PortalFeedback
-        fields = ['subject', 'body']
+        fields = ['subject', 'body', 'image']
         widgets = {
             'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subject'}),
             'body': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write your feedback here...'}),
@@ -55,7 +55,10 @@ class AddBookForm(forms.ModelForm):
         model = Book
         fields = ['title', 'author', 'publication_date', 'genre', 'isbn', 'cover_image']
         widgets = {
-            'publication_date': forms.DateInput(attrs={'type': 'date'}),
+            'publication_date': forms.NumberInput(attrs={'min': '1000', 'max': '9999'})
+        }
+        labels = {
+            'publication_date': 'Publication Year',  # Update the label here
         }
 
 
@@ -64,8 +67,12 @@ class UpdateBookForm(forms.ModelForm):
         model = Book
         fields = ['title', 'author', 'publication_date', 'genre', 'isbn']
         widgets = {
-            'publication_date': forms.DateInput(attrs={'type': 'date'}),
+            'publication_date': forms.NumberInput(attrs={'min': '1000', 'max': '9999'})
         }
+        labels = {
+            'publication_date': 'Publication Year',  # Update the label here
+        }
+
 
 class BookRatingForm(forms.ModelForm):
     class Meta:
@@ -74,18 +81,3 @@ class BookRatingForm(forms.ModelForm):
         widgets = {
             'value': forms.RadioSelect(choices=[(i, f'{i} Star{"s" if i > 1 else ""}') for i in range(1, 6)])
         }
-
-    # def __init__(self, *args, **kwargs):
-        # self.book = kwargs.pop('book')
-        # super().__init__(*args, **kwargs)
-
-        # self.fields['value'].label = None
-
-
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #
-    #     if not BorrowingHistory.objects.filter(user=self.instance.user, book=self.book).exists():
-    #         raise forms.ValidationError('You can only rate a book you have borrowed.')
-    #
-    #     return cleaned_data

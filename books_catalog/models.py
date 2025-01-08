@@ -75,7 +75,7 @@ class Book(models.Model):
 
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this book.')
     cover_image = models.ImageField(upload_to='covers', blank=True, null=True)
-    publication_date = models.IntegerField(blank=True, null=True, help_text='Date of publication')
+    publication_date = models.IntegerField(blank=True, null=True, help_text='Year of publication')
 
     borrowers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="borrowed_books")
 
@@ -213,6 +213,7 @@ class PortalFeedback(models.Model):
     subject = models.CharField(max_length=100)
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='feedback_images/', null=True, blank=True)
 
     def __str__(self):
         return f'{self.subject} - {self.user}'

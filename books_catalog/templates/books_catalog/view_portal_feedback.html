@@ -17,7 +17,7 @@
                         {{ feedback.user.username }}
                     </td>
                     <td>
-                        <a href="" class="text-decoration-none">
+                        <a href="{% url 'books_catalog:view-portal-feedback-detail' feedback.id %}" class="text-decoration-none">
                             {{ feedback.subject }}
                         </a>
                     </td>
