@@ -278,7 +278,7 @@ def return_book(request, pk):
 
 
     # Provide a success message
-    messages.success(request, f'You have successfully returned "{bookinst.book.title}".')
+    messages.success(request, f'You have successfully returned "{bookinst.book.title}".', extra_tags='book-return-successful')
 
     return redirect('books_catalog:profile-books')  # Redirect to the book list or user's borrowed books page
 

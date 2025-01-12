@@ -55,7 +55,7 @@ def data_upload(request):
 
                 Book.objects.bulk_create(books)
 
-                messages.success(request, 'Books successfully added!')
+                messages.success(request, 'Books successfully added!', extra_tags='add-book-success')
             except Exception as e:
                 messages.error(request, f"Error processing file: {e}")
 
