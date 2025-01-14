@@ -69,7 +69,7 @@ class AddBookForm(forms.ModelForm):
 class UpdateBookForm(forms.ModelForm):
     class Meta:
         model = Book
-        fields = ['title', 'author', 'publication_date', 'genre', 'isbn']
+        fields = ['title', 'author', 'publication_date', 'genre', 'isbn', 'cover_image']
         widgets = {
             'publication_date': forms.NumberInput(attrs={'min': '1000', 'max': '9999'})
         }

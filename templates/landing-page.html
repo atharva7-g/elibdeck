@@ -58,12 +58,12 @@
                                 <p class="text-muted small mb-2">{{ book.author }}</p>
                                 <p class="text-muted small mb-1">{% if book.series %}Series:
                                     {{ book.series }}{% endif %}</p>
-                                {% if book.is_available %}
-                                    <a href="{% url 'book_detail' book.id %}"
-                                       class="btn btn-primary btn-sm d-block">Borrow</a>
-                                {% else %}
-                                    <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>
-                                {% endif %}
+{#                                {% if book.is_available %}#}
+{#                                    <a href="{% url 'book_detail' book.id %}"#}
+{#                                       class="btn btn-primary btn-sm d-block">Borrow</a>#}
+{#                                {% else %}#}
+{#                                    <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>#}
+{#                                {% endif %}#}
                             </div>
                         {% endfor %}
                     {% else %}
@@ -92,12 +92,12 @@
                                 <a href="{{ book.get_absolute_url }}"><h3 class="h6 mb-1">{{ book.title }}</h3></a>
                                 <p class="text-muted small mb-2">{{ book.author }}</p>
                                 <p class="text-muted small mb-1">{{ book.sub_genre }}</p>
-                                {% if book.is_available %}
-                                    <a href="{% url 'book_detail' book.id %}"
-                                       class="btn btn-primary btn-sm d-block">Borrow</a>
-                                {% else %}
-                                    <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>
-                                {% endif %}
+{#                                {% if book.is_available %}#}
+{#                                    <a href="{% url 'book_detail' book.id %}"#}
+{#                                       class="btn btn-primary btn-sm d-block">Borrow</a>#}
+{#                                {% else %}#}
+{#                                    <button class="btn btn-secondary btn-sm d-block" disabled>Not Available</button>#}
+{#                                {% endif %}#}
                             </div>
                         {% endfor %}
                     {% else %}

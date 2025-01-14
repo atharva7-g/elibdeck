@@ -1,12 +1,31 @@
 {% extends 'generic.html' %}
-
 {% block content %}
-    <h1>Update Library Settings</h1>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Update Library Settings</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}  <!-- Renders the form fields as paragraph elements -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
 
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
+                        <!-- Form Fields -->
+                        <div class="mb-3">
+                            {{ form.as_p }}  <!-- Render fields dynamically -->
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+`

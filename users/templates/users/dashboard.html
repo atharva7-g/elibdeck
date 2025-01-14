@@ -1,28 +1,46 @@
 {% extends 'generic.html' %}
 {% block content %}
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1>{{ user.first_name }} {{ user.last_name }}</h1>
-            <p class="text-muted mb-0">
-                {{ user.room }}
-            </p>
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+                {% if not perms.books_catalog.can_mark_returned %}
+
+                    <p class="text-muted mb-0">
+                        {{ user.room }}
+                    </p>
+                {% else %}
+                    <p class="text-muted mb-0">{{ user.psrn }}</p>
+                {% endif %}
+            </div>
+            {% if not perms.books_catalog.can_mark_returned %}
+                <a href="{% url 'users:edit-profile' %}" class="btn btn-outline-primary">
+                    Edit
+                </a>
+            {% endif %}
         </div>
+
+        <hr class="my-4">
         {% if not perms.books_catalog.can_mark_returned %}
-        <a href="{% url 'users:edit-profile' %}" class="btn btn-outline-primary">
-            Edit
-        </a>
+
+            <h2>Reading Log</h2>
+            <p class="mb-3">
+                Books that you are
+                <a href="{% url 'books_catalog:profile-books' %}" class="text-decoration-none">currently reading</a>,
+                <a href="{% url 'books_catalog:issue-history' %}" class="text-decoration-none">have already read</a>,
+                and
+                <a href="/" class="text-decoration-none">want to read</a>.
+            </p>
+        {% else %}
+            <h2>Library Management</h2>
+            <p class="mb-3">
+                Add a
+                <a href="{% url 'books_catalog:add-book' %}" class="text-decoration-none">book</a>,
+                or import
+                <a href="{% url 'data_import:data-upload' %}" class="text-decoration-none">multiple books</a>,
+                or edit
+                <a href="{% url 'books_catalog:update-library-settings' %}" class="text-decoration-none">library settings</a>.
+            </p>
         {% endif %}
     </div>
-
-    <hr class="my-4">
-
-    <h2>Reading Log</h2>
-    <p class="mb-3">
-    Books that you are
-        <a href="{% url 'books_catalog:profile-books' %}" class="text-decoration-none">currently reading</a>,
-        <a href="{% url 'books_catalog:issue-history' %}" class="text-decoration-none">have already read</a>, and
-        <a href="/" class="text-decoration-none">want to read</a>.
-    </p>
-</div>
 {% endblock %}

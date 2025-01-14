@@ -341,7 +341,7 @@ def add_book(request):
         form = AddBookForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Book added successfully!')
+            messages.success(request, 'Book added successfully!', extra_tags="book-added-success")
             return redirect('books_catalog:books')
     else:
         form = AddBookForm()

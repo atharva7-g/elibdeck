@@ -13,9 +13,11 @@
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
+                {% if 'book-added-success' in message.tags %}
                 <div class="alert alert-success">
                     {{ message }}
                 </div>
+                {% endif %}
             {% endfor %}
         </div>
     {% endif %}
