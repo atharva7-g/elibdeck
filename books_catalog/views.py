@@ -104,11 +104,12 @@ class BookDetailView(generic.DetailView):
     template_name = 'books_catalog/book_detail.html'
     context_object_name = 'book'
 
-
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
         user_rating = None
         form = None
+        book = self.get_object()
 
         # Get user rating if authenticated
         if self.request.user.is_authenticated:
@@ -131,6 +132,9 @@ class BookDetailView(generic.DetailView):
                 context['rating'] = rating
             else:
                 context['rating_form'] = BookRatingForm()
+
+        available_copies = book.bookinstance_set.all().filter(status='a')
+        context['available_copies_count'] = available_copies.count()  # Display number of available copies
 
         return context
 
@@ -340,7 +344,15 @@ def add_book(request):
     if request.method == 'POST':
         form = AddBookForm(request.POST)
         if form.is_valid():
-            form.save()
+            book = form.save()
+
+            available_copies = request.POST.get('available_copies', 1)  # Get the number of copies to add, default to 1
+
+            for _ in range(int(available_copies)):
+                BookInstance.objects.create(
+                    book=book,
+                    status='a'  # You can set the status to 'available' by default
+                )
             messages.success(request, 'Book added successfully!', extra_tags="book-added-success")
             return redirect('books_catalog:books')
     else:

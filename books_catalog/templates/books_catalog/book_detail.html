@@ -15,7 +15,6 @@
 
                     <!-- User's rating form -->
                     {% if user.is_authenticated %}
-                        <h4>Rating</h4>
                         {% if can_rate %}
                             {% if not user_rating %}
                                 <form method="post">
@@ -71,23 +70,32 @@
         <br>
 
         <h4>Copies</h4>
-
-        {% for copy in book.bookinstance_set.all %}
+        {% if available_copies_count > 0 %}
+                <p class="text-muted">
+                {{ available_copies_count }} available
+                </p>
+            {% for copy in book.bookinstance_set.all %}
+                <hr/>
+                <p
+                        class="{% if copy.status == 'a' %}text-success{% elif copy.status == 'm' %}text-danger{% else %}text-warning{% endif %}">
+                    {{ copy.get_status_display }}
+                </p>
+                {% if copy.status != 'a' %}
+                    <p><strong>Due to be returned:</strong> {{ copy.due_date }}</p>
+                {% elif copy.status == 'a' and user.is_authenticated and not perms.books_catalog.can_mark_returned %}
+                    <p><a href="{% url 'books_catalog:borrow-book' copy.id %}" class="btn btn-primary">Borrow book</a>
+                    </p>
+                {% endif %}
+                {% if perms.books_catalog.can_mark_returned %}
+                    <p class="text-muted"><strong>Id:</strong> {{ copy.id }}</p>
+                    <a href="{% url 'books_catalog:update-book' pk=book.pk %}" class="btn btn-primary">Edit</a>
+                {% endif %}
+            {% endfor %}
+        {% else %}
             <hr/>
-            <p
-                    class="{% if copy.status == 'a' %}text-success{% elif copy.status == 'm' %}text-danger{% else %}text-warning{% endif %}">
-                {{ copy.get_status_display }}
-            </p>
-            {% if copy.status != 'a' %}
-                <p><strong>Due to be returned:</strong> {{ copy.due_date }}</p>
-            {% elif copy.status == 'a' and user.is_authenticated and not perms.books_catalog.can_mark_returned %}
-                <p><a href="{% url 'books_catalog:borrow-book' copy.id %}" class="btn btn-primary">Borrow book</a></p>
-            {% endif %}
-            {% if perms.books_catalog.can_mark_returned %}
-                <p class="text-muted"><strong>Id:</strong> {{ copy.id }}</p>
-                <a href="{% url 'books_catalog:update-book' pk=book.pk %}" class="btn btn-primary">Edit</a>
-            {% endif %}
-        {% endfor %}
+            <p class="text-warning">No copies available.</p>
+        {% endif %}
     </div>
+
 
 {% endblock %}

@@ -1,4 +1,5 @@
 import os.path
+from zoneinfo import available_timezones
 
 import pandas as pd
 from django.contrib.auth.decorators import permission_required, login_required
@@ -9,7 +10,7 @@ from django.views import View
 from django.conf import settings
 from django.http import FileResponse, HttpResponse
 from django.contrib import messages
-from books_catalog.models import Genre, Book, Author
+from books_catalog.models import Genre, Book, Author, BookInstance
 from .forms import DataUploadForm
 
 
@@ -28,6 +29,7 @@ def data_upload(request):
             try:
                 df = pd.read_excel(excel_file)
                 books = []
+                book_instances = []
 
 
 
@@ -52,6 +54,14 @@ def data_upload(request):
                     genres = [g.strip() for g in row['Genre'].split(',')] if row['Genre'] else []
                     genre_objects = [Genre.objects.get_or_create(name=genre)[0] for genre in genres]
                     book.genre.set(genre_objects)
+
+                    available_copies = row['Copies']  # Number of copies from the Excel file
+                    for _ in range(available_copies):
+                        book_instance = BookInstance(
+                            book=book,
+                            status='a'  # Assuming the book is available
+                        )
+                        book_instances.append(book_instance)
 
                 Book.objects.bulk_create(books)
 

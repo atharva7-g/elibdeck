@@ -55,9 +55,11 @@ class AddAuthorForm(forms.ModelForm):
 
 
 class AddBookForm(forms.ModelForm):
+    available_copies = forms.IntegerField(min_value=1, initial=1, label="Number of Copies")
+
     class Meta:
         model = Book
-        fields = ['title', 'author', 'publication_date', 'genre', 'isbn', 'cover_image']
+        fields = ['title', 'author', 'publication_date', 'genre', 'isbn', 'cover_image', 'available_copies']
         widgets = {
             'publication_date': forms.NumberInput(attrs={'min': '1000', 'max': '9999'})
         }
