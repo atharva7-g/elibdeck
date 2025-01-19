@@ -239,3 +239,13 @@ class BookRating(models.Model):
 
     def __str__(self):
         return f'{self.user} rated {self.book.title} - {self.value}'
+
+class Favourite(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='favourites')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='favourited_by')
+
+    class Meta:
+        unique_together = ('user', 'book')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.book.title}"

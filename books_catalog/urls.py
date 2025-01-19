@@ -26,5 +26,9 @@ urlpatterns = [
     path('feedback/view', views.view_portal_feedback, name='view-portal-feedback'),
     path('feedback/view/<int:feedback_id>/', views.feedback_detail, name='view-portal-feedback-detail'),  # Feedback details
 
+    path('profile/favourites', views.favourite_list, name='favourite-list'),
+    path('profile/favorites/add/<int:pk>/', views.add_favourite, name='add-favourite'),
+    path('profile/favorites/remove/<int:pk>/', views.remove_favourite, name='remove-favourite'),
+
     path('search/', views.CatalogSearchView.as_view(), name='search'),
 ]

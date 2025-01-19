@@ -8,7 +8,7 @@ from django.db.models.signals import post_migrate
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory, PortalFeedback, BookRating
+from .models import Book, Author, BookInstance, Genre, LibrarySettings, BorrowingHistory, PortalFeedback, BookRating, Favourite
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.db.models import Q, Value, Avg
@@ -116,6 +116,8 @@ class BookDetailView(generic.DetailView):
             user_rating = BookRating.objects.filter(book=self.object, user=self.request.user).first()
             form = BookRatingForm(instance=user_rating)
 
+        is_favourite = Favourite.objects.filter(user=self.request.user,
+                                              book=self.object).exists() if self.request.user.is_authenticated else False
         context.update({
             'form': form,
             'user_rating': user_rating,
@@ -135,6 +137,7 @@ class BookDetailView(generic.DetailView):
 
         available_copies = book.bookinstance_set.all().filter(status='a')
         context['available_copies_count'] = available_copies.count()  # Display number of available copies
+        context['is_favourite'] = is_favourite
 
         return context
 
@@ -390,3 +393,22 @@ def feedback_detail(request, feedback_id):
 def issue_history(request):
     borrows = BorrowingHistory.objects.filter(user=request.user).order_by('-borrowed_date')
     return render(request, 'books_catalog/issue_history.html', {'borrows': borrows})
+
+@login_required
+def add_favourite(request, pk):
+    book = get_object_or_404(Book, id=pk)
+    Favourite.objects.get_or_create(user=request.user, book=book)
+    return reverse_lazy('books_catalog:book-detail', pk=pk)
+
+@login_required
+def remove_favourite(request, pk):
+    book = get_object_or_404(Book, id=pk)
+    favourite = Favourite.objects.filter(user=request.user, book=book)
+    if favourite.exists():
+        favourite.delete()
+    return reverse_lazy('books_catalog:book-detail', pk=pk)
+
+@login_required
+def favourite_list(request):
+    favourites = Favourite.objects.filter(user=request.user)
+    return render(request, 'books_catalog/favourite_list.html', {'favourites': favourites})

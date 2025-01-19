@@ -1,0 +1,11 @@
+{% extends 'generic.html' %}
+
+{% block content %}
+<h1>Your Favourite Books</h1>
+<ul>
+    {% for favourite in favourites %}
+        <li>{{ favourite.book.title }} by {{ favourite.book.author }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
