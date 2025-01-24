@@ -31,10 +31,7 @@ def data_upload(request):
                 books = []
                 book_instances = []
 
-
-
                 for _, row in df.iterrows():
-
                     author_full_name = row['Author']
                     first_name, last_name = (author_full_name.split(' ', 1) + [""])[
                                             :2]
@@ -56,18 +53,19 @@ def data_upload(request):
                     book.genre.set(genre_objects)
 
                     available_copies = row['Copies']  # Number of copies from the Excel file
-                    for _ in range(available_copies):
-                        book_instance = BookInstance(
-                            book=book,
-                            status='a'  # Assuming the book is available
-                        )
-                        book_instances.append(book_instance)
+                    book_instances = [
+                        BookInstance.objects.create(book=book, status='a') for _ in range(int(available_copies))
+                    ]
 
                 Book.objects.bulk_create(books)
+                Book.objects.bulk_create(book_instances)
 
                 messages.success(request, 'Books successfully added!', extra_tags='add-book-success')
+
             except Exception as e:
                 messages.error(request, f"Error processing file: {e}")
+        else:
+            return render(request, 'data_import/data_upload.html', {'form': form})
 
         return render(request, 'data_import/data_upload.html', {"form": form})
     return render(request, 'data_import/data_upload.html')

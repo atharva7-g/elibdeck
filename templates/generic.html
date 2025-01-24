@@ -89,7 +89,7 @@
         </div>
     </div>
 </nav>
-<div class="col-sm-10">
+<div>
     <div style="margin-left:20px;margin-top:10px">
         {% block content %}
         {% endblock %}
@@ -122,7 +122,10 @@
     {% if not perms.books_catalog.can_mark_returned %}
         <p><a href="{% url 'books_catalog:submit-portal-feedback' %}">Submit feedback</a></p>
     {% else %}
-        <p><a href="{% url 'books_catalog:view-portal-feedback' %}">View feedback</a></p>
+        <p><a href="{% url 'books_catalog:view-portal-feedback' %}">View feedback</a> |
+
+            <a href="">View all late fees</a>
+        </p>
     {% endif %}
 
 </footer>

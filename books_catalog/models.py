@@ -91,7 +91,7 @@ class Book(models.Model):
         ordering = ['title', '-publication_date']
 
     def __str__(self):
-        return self.title
+        return self.title if self.title else "Untitled Book"
 
 
     def get_absolute_url(self):
@@ -153,7 +153,7 @@ class BookInstance(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return f'{self.id} ({self.book.title})'
+        return f'{self.id} ({self.book.title})' if self.book.title else f'{self.id}'
 
 
 class Author(models.Model):
