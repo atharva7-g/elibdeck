@@ -2,6 +2,7 @@ import os.path
 from zoneinfo import available_timezones
 
 import pandas as pd
+from allauth.core.internal.httpkit import redirect
 from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render
 import openpyxl
@@ -34,7 +35,6 @@ def data_upload(request):
 
 
                 for _, row in df.iterrows():
-
                     author_full_name = row['Author']
                     first_name, last_name = (author_full_name.split(' ', 1) + [""])[
                                             :2]
@@ -44,32 +44,42 @@ def data_upload(request):
                         last_name=last_name
                     )
 
-                    book = Book.objects.create(
+                    book = Book(
                         title=row['Title'],
                         author=author,
-                        publication_date=row['Publication Date'],
+                        publication_date=row['Publication Year'],
                         isbn=row['ISBN']
                     )
+                    books.append(book)
 
-                    genres = [g.strip() for g in row['Genre'].split(',')] if row['Genre'] else []
-                    genre_objects = [Genre.objects.get_or_create(name=genre)[0] for genre in genres]
-                    book.genre.set(genre_objects)
+                    # genres = [g.strip() for g in row['Genre'].split(',')] if row['Genre'] else []
+                    # genre_objects = [Genre.objects.get_or_create(name=genre)[0] for genre in genres]
+                    # book.genre.set(genre_objects)
 
-                    available_copies = row['Copies']  # Number of copies from the Excel file
+                    available_copies = int(row['Copies']) if not pd.isna(row['Copies']) else 0  # Number of copies from the Excel file
                     for _ in range(available_copies):
                         book_instance = BookInstance(
                             book=book,
-                            status='a'  # Assuming the book is available
+                            status='a'
                         )
                         book_instances.append(book_instance)
 
+
                 Book.objects.bulk_create(books)
+                BookInstance.objects.bulk_create(book_instances)
+
+                for book, row in zip(books, df.iterrows()):
+                    genres = [g.strip() for g in row[1]['Genre'].split(',')] if row[1]['Genre'] else []
+                    genre_objects = [Genre.objects.get_or_create(name=genre)[0] for genre in genres]
+                    book.genre.set(genre_objects)
 
                 messages.success(request, 'Books successfully added!', extra_tags='add-book-success')
+                return redirect('data_import:data-upload')
 
             except Exception as e:
                 messages.error(request, f"Error processing file: {e}")
         else:
+            messages.error(request, 'Invalid form submission.')
             return render(request, 'data_import/data_upload.html', {'form': form})
 
         return render(request, 'data_import/data_upload.html', {"form": form})

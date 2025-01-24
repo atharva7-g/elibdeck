@@ -20,11 +20,11 @@
                     <div class="mb-4">
                         <h6 class="text-secondary">READING LOG</h6>
                         <div class="d-flex justify-content-between">
-                            <a href="#" class="text-decoration-none text-primary">Favourites</a>
+                            <a href="{% url 'books_catalog:favourite-list' %}" class="text-decoration-none text-primary">Favourites</a>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <a href="#" class="text-decoration-none text-primary">My Ratings</a>
-                        </div>
+{#                        <div class="d-flex justify-content-between">#}
+{#                            <a href="#" class="text-decoration-none text-primary">My Ratings</a>#}
+{#                        </div>#}
                     </div>
                 </div>
             </div>
@@ -43,6 +43,7 @@
                                     {% for favourite in favourite_list %}
                                         <tr>
                                             <!-- Book Cover -->
+                                            {% if favourite.book.cover_image %}
                                             <td class="text-center" style="width: 120px;">
                                                 <div class="book-cover-wrapper shadow-sm rounded">
                                                     <img src="{{ favourite.book.cover_image.url }}"
@@ -51,6 +52,7 @@
                                                          style="max-width: 100px;">
                                                 </div>
                                             </td>
+                                            {% endif %}
 
                                             <!-- Book Details -->
                                             <td>

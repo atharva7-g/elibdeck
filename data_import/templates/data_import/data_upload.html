@@ -29,12 +29,18 @@
                                     </button>
                                 </form>
 
+                            <br>
                                 {% if messages %}
                                     {% for message in messages %}
                                         {% if 'add-book-success' in message.extra_tags %}
                                             <div class="alert alert-success">
                                                 {{ message }}
                                             </div>
+                                        {% else %}
+                                            <div class="alert alert-warning">
+                                                {{ message }}
+                                            </div>
+
                                         {% endif %}
                                     {% endfor %}
                                 {% endif %}
