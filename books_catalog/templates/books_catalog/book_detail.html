@@ -68,12 +68,17 @@
                         {% if is_favourite %}
                             <form method="post" action="{% url 'books_catalog:remove-favourite' book.id %}">
                                 {% csrf_token %}
-                                <button type="submit">Remove from Favorites</button>
+                                <button type="submit" class="btn btn-outline-primary">
+                                    Remove from Favorites
+                                </button>
+
                             </form>
                         {% else %}
                             <form method="post" action="{% url 'books_catalog:add-favourite' book.id %}">
                                 {% csrf_token %}
-                                <button type="submit">Add to Favorites</button>
+                                <button type="submit" class="btn btn-outline-primary">
+                                    Add to Favorites
+                                </button>
                             </form>
                         {% endif %}
                     {% endif %}

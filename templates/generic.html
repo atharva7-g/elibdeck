@@ -119,7 +119,12 @@
 <footer class="bg-light text-center py-3 mt-auto">
     <hr>
     <p>&copy; 2247 ELibDeck. All rights reserved.</p>
-    <p><a href="{% url 'books_catalog:submit-portal-feedback' %}">Submit feedback</a></p>
+    {% if not perms.books_catalog.can_mark_returned %}
+        <p><a href="{% url 'books_catalog:submit-portal-feedback' %}">Submit feedback</a></p>
+    {% else %}
+        <p><a href="{% url 'books_catalog:view-portal-feedback' %}">View feedback</a></p>
+    {% endif %}
+
 </footer>
 
 </html>

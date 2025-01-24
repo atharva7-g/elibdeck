@@ -398,7 +398,7 @@ def issue_history(request):
 def add_favourite(request, pk):
     book = get_object_or_404(Book, id=pk)
     Favourite.objects.get_or_create(user=request.user, book=book)
-    return reverse_lazy('books_catalog:book-detail', pk=pk)
+    return redirect('books_catalog:favourite-list')
 
 @login_required
 def remove_favourite(request, pk):
@@ -406,9 +406,10 @@ def remove_favourite(request, pk):
     favourite = Favourite.objects.filter(user=request.user, book=book)
     if favourite.exists():
         favourite.delete()
-    return reverse_lazy('books_catalog:book-detail', pk=pk)
+    return redirect('books_catalog:favourite-list')
+
 
 @login_required
 def favourite_list(request):
     favourites = Favourite.objects.filter(user=request.user)
-    return render(request, 'books_catalog/favourite_list.html', {'favourites': favourites})
+    return render(request, 'books_catalog/favourite_list.html', {'favourite_list': favourites})

@@ -1,11 +1,106 @@
-{% extends 'generic.html' %}
-
+{% extends "generic.html" %}
 {% block content %}
-<h1>Your Favourite Books</h1>
-<ul>
-    {% for favourite in favourites %}
-        <li>{{ favourite.book.title }} by {{ favourite.book.author }}</li>
-    {% endfor %}
-</ul>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 bg-light border-end">
+                <div class="p-3">
+                    <!-- User Section -->
+                    <h5 class="text-secondary mb-3">{{ user.username }}</h5>
 
+                    <!-- Loans Section -->
+                    <div class="mb-4">
+                        <div><a href="{% url 'books_catalog:profile-books' %}"
+                                class="text-decoration-none text-primary">My Loans</a></div>
+                        <div><a href="{% url 'books_catalog:issue-history' %}"
+                                class="text-decoration-none text-primary">Loan History</a></div>
+                    </div>
+
+                    <!-- Reading Log Section -->
+                    <div class="mb-4">
+                        <h6 class="text-secondary">READING LOG</h6>
+                        <div class="d-flex justify-content-between">
+                            <a href="#" class="text-decoration-none text-primary">Favourites</a>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="#" class="text-decoration-none text-primary">My Ratings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 p-4">
+                <div class="card shadow-sm">
+                    <div class="card-header border-bottom d-flex justify-content-between align-items-center bg-white">
+                        <h2 class="mb-0">Favourite Books</h2>
+                    </div>
+                    <div class="card-body">
+                        {% if favourite_list %}
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <tbody>
+                                    {% for favourite in favourite_list %}
+                                        <tr>
+                                            <!-- Book Cover -->
+                                            <td class="text-center" style="width: 120px;">
+                                                <div class="book-cover-wrapper shadow-sm rounded">
+                                                    <img src="{{ favourite.book.cover_image.url }}"
+                                                         alt="{{ favourite.book.title }}"
+                                                         class="img-fluid rounded"
+                                                         style="max-width: 100px;">
+                                                </div>
+                                            </td>
+
+                                            <!-- Book Details -->
+                                            <td>
+                                                <h5 class="mb-1">
+                                                    <a href="{% url 'books_catalog:book-detail' favourite.book.pk %}"
+                                                       class="text-decoration-none">
+                                                        {{ favourite.book.title }}
+                                                    </a>
+                                                </h5>
+                                                <p class="text-muted mb-1">by {{ favourite.book.author }}</p>
+                                            </td>
+
+{#                                            <!-- Status and Actions -->#}
+{#                                            <td class="text-end" style="width: 200px;">#}
+{#                                                {% if bookinst.is_overdue %}#}
+{#                                                    <div class="alert alert-danger py-2 mb-2">#}
+{#                                                        <small class="d-block">#}
+{#                                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>#}
+{#                                                            Overdue by: {{ bookinst.overdue_by }} days#}
+{#                                                        </small>#}
+{#                                                        <small class="d-block fw-bold">#}
+{#                                                            Late fee: {{ bookinst.late_fee }}#}
+{#                                                        </small>#}
+{#                                                    </div>#}
+{#                                                {% endif %}#}
+{#                                                <a href="{% url 'books_catalog:return-book' bookinst.id %}"#}
+{#                                                   class="btn btn-primary btn-sm">#}
+{#                                                    <i class="bi bi-arrow-return-left me-1"></i>#}
+{#                                                    Return Book#}
+{#                                                </a>#}
+{#                                            </td>#}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="bi bi-book display-1 text-muted mb-3"></i>
+                                <h3 class="text-muted">No Favourite Books</h3>
+                                <p class="text-muted mb-4">You haven't favourited any books.</p>
+                                <a href="{% url 'books_catalog:profile-books' %}"
+                                   class="btn btn-outline-primary">
+                                    View Borrowed Books
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
