@@ -1,4 +1,2 @@
-TODO:
-- ~~rating system~~
-- ~~Google Console API key~~
-- ~~Cover Image~~
+# ELibDeck
+An online library management system.
